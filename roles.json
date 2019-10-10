@@ -1,0 +1,180 @@
+{
+  "developer": {
+    "title": "Разработчик",
+    "emoji": "🔧",
+    "data": {
+      "allow": true,
+      "disallow": [
+
+      ],
+      "values": {
+          "maxGame": 1000000
+      }
+    }
+  },
+
+  "owner": {
+      "title": "Владелец",
+      "emoji": "ℹ",
+      "data": {
+        "allow": true,
+        "disallow": [
+
+        ],
+        "values": {
+            "maxGame": 1000000
+        }
+      }
+  },
+
+  "mainAdministrator": {
+      "title": "Глав. админ",
+      "emoji": "◻",
+      "data": {
+        "allow": [
+            "command:staffOnly",
+            "command:setrole",
+            "command:kickUser",
+            "command:setNick"
+        ],
+        "disallow": [
+
+        ],
+        "values": {
+            "maxGame": 1000000
+        }
+      }
+  },
+
+  "administrator": {
+      "title": "Администратор",
+      "emoji": "◽",
+      "data": {
+        "allow": [
+            "command:staffOnly",
+            "command:kickUser",
+            "command:setNick"
+        ],
+        "disallow": [
+
+        ],
+        "values": {
+            "maxGame": 1000000
+        }
+      }
+  },
+
+  "moderator": {
+      "title": "Модератор",
+      "emoji": "▫",
+      "data": {
+        "allow": [
+            "command:staffOnly",
+            "command:kickUser",
+            "command:setNick"
+        ],
+        "disallow": [
+
+        ],
+        "values": {
+            "maxGame": 1000000
+        }
+      }
+  },
+
+  "eca": {
+      "title": "ECA",
+      "emoji": "🎈",
+      "data": {
+        "allow": [
+
+        ],
+        "disallow": [
+
+        ],
+        "values": {
+            "maxGame": 1000000
+        }
+      }
+  },
+
+  "candidateForTechnicalStaff": {
+      "title": "Стажёр",
+      "emoji": "🎓",
+      "data": {
+        "allow": [
+            "command:staffOnly"
+        ],
+        "disallow": [
+
+        ],
+        "values": {
+            "maxGame": 1000000
+        }
+      }
+  },
+
+  "technicalSupportAgent": {
+      "title": "Агент ТП",
+      "emoji": "🔏",
+      "data": {
+        "allow": [
+            "command:staffOnly"
+        ],
+        "disallow": [
+
+        ],
+        "values": {
+            "maxGame": 1000000
+        }
+      }
+  },
+
+  "vipPlus": {
+      "title": "ВИП+",
+      "emoji": "🌟",
+      "data": {
+        "allow": [
+
+        ],
+        "disallow": [
+
+        ],
+        "values": {
+            "maxGame": 100000
+        }
+      }
+  },
+
+  "vip": {
+      "title": "ВИП",
+      "emoji": "⭐",
+      "data": {
+        "allow": [
+
+        ],
+        "disallow": [
+
+        ],
+        "values": {
+            "maxGame": 25000
+        }
+      }
+  },
+
+  "user": {
+    "title": "Пользователь",
+    "emoji": "👤",
+    "data": {
+      "allow": [
+
+      ],
+      "disallow": [
+
+      ],
+      "values": {
+          "maxGame": 5000
+      }
+    }
+  }
+}

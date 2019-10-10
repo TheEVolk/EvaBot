@@ -1,0 +1,7 @@
+{
+  "name": "EvaBot",
+  "script": "index.js",
+  "args": ["--color"],
+  "watch": ["src"],
+  "node_args": "-r esm"
+}

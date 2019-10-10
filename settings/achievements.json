@@ -1,0 +1,20 @@
+[
+    {
+        "tag": "firstWinOnLottery",
+        "title": "Везунчик",
+        "description": "выиграть в лотерее 1КК бит",
+        "bonus": 5000
+    },
+    {
+        "tag": "itsMe",
+        "title": "Ит'c ми",
+        "description": "посмотреть свой профиль",
+        "bonus": 5000
+    },
+    {
+        "tag": "petWinner",
+        "title": "Личный боец",
+        "description": "победить в дуэли питомцев",
+        "bonus": 25000
+    }
+]

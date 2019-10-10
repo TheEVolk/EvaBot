@@ -1,0 +1,23 @@
+{
+	"vk": {
+    "token": "558bf1367ce05ce35885e39ed38c9d6df58de553f7663bc6822f87a11c6a4b6405dc19d30ddaec4f1601f"
+  },
+  "database": {
+    "name": "db_eva",
+    "user": "eva",
+    "pass": "Z555z66^",
+    "options": {
+      "host": "localhost",
+      "dialect": "postgres",
+      "logging": false,
+      "client_encoding": "UTF8",
+      "charset": "utf8mb4",
+      "pool": {
+        "max": 5,
+        "min": 0,
+        "acquire": 30000,
+        "idle": 10000
+      }
+    }
+  }
+}

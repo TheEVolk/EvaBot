@@ -1,0 +1,45 @@
+[
+    {
+        "name": "bot",
+        "category": "common",
+        "remote": "github:hentaplugins/bot"
+    },
+    {
+        "name": "botcmd",
+        "category": "common",
+        "repo": "github:hentaplugins/botcmd"
+    },
+    {
+        "name": "db",
+        "category": "common",
+        "repo": "github:hentaplugins/db"
+    },
+    {
+        "name": "users",
+        "category": "common",
+        "repo": "github:hentaplugins/users"
+    },
+    {
+        "name": "nicknames",
+        "category": "common",
+        "repo": "github:hentaplugins/nicknames"
+    },
+    {
+        "name": "mentions",
+        "category": "common",
+        "repo": "github:hentaplugins/mentions"
+    },
+    {
+        "name": "pex",
+        "category": "common",
+        "repo": "github:hentaplugins/pex"
+    },
+    {
+        "name": "moneys",
+        "category": "systems"
+    },
+    {
+        "name": "achievements",
+        "category": "systems"
+    }
+]

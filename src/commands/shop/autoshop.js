@@ -1,0 +1,12 @@
+export default class {
+  constructor () {
+    Object.assign(this, {
+      name: 'автосалон',
+      description: 'купить транспортное средство'
+    })
+  }
+
+  async handler (ctx) {
+    ctx.answer('Вы заглянули в автосалон, но строители выгнали вас. Это место пустое.')
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "henta-plugin-systems-moneys",
+  "version": "0.2.0",
+  "description": "Moneys plugin",
+  "main": "src/index.js",
+  "keywords": [],
+  "author": "TheEVolk",
+  "license": "ISC"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "henta-plugin-systems-pets",
+  "version": "0.2.0",
+  "description": "Achievements plugin",
+  "main": "src/index.js",
+  "keywords": [],
+  "author": "TheEVolk",
+  "license": "ISC"
+}

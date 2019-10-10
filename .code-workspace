@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      // Source code
+      "name": "EvaBeta",
+      "path": "/home/bots/eva"
+    },
+    {
+      // Docs and release notes
+      "name": "Henta",
+      "path": "/home/bots/HENTA"
+    }
+  ],
+  "settings": {
+    "javascript.validate.enable": false
+  }
+}
