@@ -27,6 +27,12 @@ export default class MessageProcessor extends EventEmitter {
   }
 
   async process (ctx, next) {
+    if (this.bot.settings.ignoreGroups) {
+      if (ctx.senderId < 0) {
+        return next()
+      }
+    }
+
     try {
       applyContextMethods(ctx, this.bot.henta)
       await this.middleware(ctx, () => {})

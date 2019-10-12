@@ -35,6 +35,24 @@
         "repo": "github:hentaplugins/pex"
     },
     {
+        "name": "req",
+        "category": "common",
+        "repo": "github:hentaplugins/req"
+    },
+    {
+        "name": "redis",
+        "category": "common",
+        "repo": "github:hentaplugins/redis"
+    },
+    {
+        "name": "betaNotify",
+        "category": "bot"
+    },
+    {
+        "name": "commandNotFound",
+        "category": "bot"
+    },
+    {
         "name": "moneys",
         "category": "systems"
     },

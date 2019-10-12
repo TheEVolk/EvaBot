@@ -1,5 +1,8 @@
 [
   "check-mentions",
+  "show-beta-notify",
   "connect-user",
-  "command"
+  "requests",
+  "command",
+  "commandNotFound"
 ]

@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize'
+import initBotcmdType from './botcmdType'
 
 export default class {
   constructor (henta) {
@@ -13,6 +14,8 @@ export default class {
       allowNull: false,
       defaultValue: 10000
     })
+
+    initBotcmdType(this)
   }
 
   briefNumber (number) {

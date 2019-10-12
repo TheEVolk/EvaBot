@@ -1,3 +1,4 @@
 {
-  "logNewMessages": true
+  "logNewMessages": true,
+  "ignoreGroups": true
 }

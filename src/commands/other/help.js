@@ -34,7 +34,7 @@ export default class {
   }
 
   handler (ctx) {
-    if (ctx.isChat()) {
+    if (ctx.isChat) {
       return ctx.answer([
         '💢 Используйте эту команду только в ЛС:',
         '>> vk.me/bot_eva'

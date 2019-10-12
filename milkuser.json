@@ -1,5 +1,0 @@
-[
-  { "name": "emoji", "params": { "type": "STRING", "defaultValue": "👤" } },
-  { "name": "isProfileClosed", "params": { "type": "STRING", "defaultValue": "false" } },
-  { "name": "canReceiveMoney", "params": { "type": "STRING", "defaultValue": "true" } }
-]

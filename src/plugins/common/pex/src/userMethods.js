@@ -3,7 +3,7 @@ import Sequelize from 'sequelize'
 export default function initUsersMethods (plugin) {
   const usersPlugin = plugin.henta.getPlugin('common/users')
 
-  usersPlugin.field('role', { 
+  usersPlugin.field('role', {
     type: Sequelize.STRING,
     allowNull: false,
     defaultValue: 'user'

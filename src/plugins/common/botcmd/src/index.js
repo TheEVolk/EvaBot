@@ -34,7 +34,6 @@ export default class {
       return true
     }
 
-    console.log('ctx.user.pex.is(right) ', right, ctx.user.pex.is(right))
     if (!ctx.user.pex || !ctx.user.pex.is(right)) {
       ctx.answer(errStr || '⛔ Недостаточно прав для совершения этой операции.')
       return false

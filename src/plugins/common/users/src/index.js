@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize'
 import initUsersMethods from './defaultMethods'
 import botHandler from './botHandler'
+import initBotcmdType from './botcmdType'
 import EventEmitter from 'events'
 
 export default class extends EventEmitter {
@@ -22,6 +23,7 @@ export default class extends EventEmitter {
     messageProcessor.handlers.set('connect-user', botHandler.bind(this))
 
     initUsersMethods(this)
+    initBotcmdType(this)
   }
 
   async start (henta) {
@@ -113,6 +115,7 @@ export default class extends EventEmitter {
     @return VkId пользователя.
   */
   async resolveVkId (str) {
+    console.log(str)
     // str = str.replace(this.pushRegexp, '$1')
     const res = await this.henta.vk.snippets.resolveResource(str)
     return res.type === 'user' && res.id

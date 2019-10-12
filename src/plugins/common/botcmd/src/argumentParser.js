@@ -22,7 +22,12 @@ export default class ArgumentParser {
   }
 
   getFunction (slug) {
-    return this.types[slug]
+    const func = this.types[slug]
+    if (!func) {
+      throw Error(`Сущность ${slug} не существует.`)
+    }
+
+    return func
   }
 
   async parse (ctx, argList, offset) {

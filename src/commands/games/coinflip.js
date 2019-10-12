@@ -1,35 +1,14 @@
-export default class {
-  constructor () {
-    Object.assign(this, {
-      name: 'кф',
-      description: 'коинфлип',
-      emoji: '🌗',
-      arguments: {
-        target: { name: 'профиль', type: 'user' },
-        rate: { name: 'ставка', type: 'moneys' }
-      }
-    })
-  }
+class CoinflipRequestHandler {
+  accept (ctx, { source, rate, sendResult }) {
+    const { briefNumber } = ctx.getPlugin('systems/moneys')
 
-  init (henta) {
-    henta.getPlugin('common/requests').addTag(
-      'games:coinflip',
-      this.acceptGame,
-      this.denyGame
-    )
-  }
+    if (ctx.user.money < rate) {
+      return ctx.answer(`⛔ Недостаточно бит.`)
+    }
 
-  async denyGame (ctx, { source }) {
-    source.send(`❌ ${ctx.user.r()} отклонил вашу заявку в КФ.`)
-    ctx.answer(`⭕ Заявка на КФ с ${source.r()} отклонена.`)
-  }
-
-  async acceptGame (ctx, { source, rate, peers }) {
-    ctx.user.assertBalance(ctx, rate)
-    ctx.assert(
-      source.money >= rate,
-      'у оппонента недостаточно средств для игры с вами.'
-    )
+    if (source.money < rate) {
+      return ctx.answer(`⛔ У оппонента недостаточно бит.`)
+    }
 
     const winner = Math.random() >= 0.5 ? ctx.user : source
     const looser = winner === ctx.user ? source : ctx.user
@@ -38,28 +17,48 @@ export default class {
     looser.money -= rate
     source.save()
 
-    const message = [
-      `🌗 ${source.r()} и ${ctx.user.r()}:`,
-      `💰 Ставка: ${rate.toLocaleString('ru')} бит.`,
-      `
-⚜ ${winner.r()} победил!`
-    ].join('\n')
+    sendResult([
+      `🌗 ${source} vs ${ctx.user}:`,
+      `💰 ${rate.toLocaleString('ru')} бит.`,
+      `\n⚜ ${winner} победил!`
+    ])
 
-    peers.forEach((peerId) => ctx.api.messages.send({ peerId, message }))
-    ctx.answered = true
+    winner.send(`➕ ${briefNumber(rate)} [${briefNumber(winner.money)}].`)
+    looser.send(`➖ ${briefNumber(rate)} [${briefNumber(looser.money)}].`)
+  }
+
+  deny (ctx, { source }) {
+    ctx.answer(`⭕ Вы отклонили приглашение в коинфлип.`)
+    source.send(`⭕ ${ctx.user} отклонил ваше приглашение в коинфлип.`)
+  }
+}
+
+export default class {
+  name = 'кф'
+  description = 'коинфлип'
+  emoji = '🌗'
+  arguments = {
+    target: { name: 'профиль', type: 'user' },
+    rate: { name: 'ставка', type: 'moneys' }
+  }
+
+  init (henta) {
+    const requestsPlugin = henta.getPlugin('common/requests')
+    requestsPlugin.set('games:coinflip', new CoinflipRequestHandler())
   }
 
   async handler (ctx) {
-    const { tip } = ctx.params.target.createRequest({
+    const rateStr = ctx.params.rate.toLocaleString('ru')
+    const { tip } = ctx.params.target.req.new({
       tag: 'games:coinflip',
-      text: `${ctx.user.r()} хочет сыграть с вами в КФ на ${ctx.params.rate.toLocaleString('ru')} бит.`,
+      text: `${ctx.user} хочет сыграть с вами в КФ на ${rateStr} бит.`,
       payload: { rate: ctx.params.rate },
-      peer: ctx.msg.peer_id
+      peer: ctx.peerId
     }, ctx.user)
 
     ctx.answer([
-      '✅ Вы подали заявку на игру в КФ:',
-      `💰 Ставка: ${ctx.params.rate.toLocaleString('ru')} бит.`,
+      `💰 Ставка: ${rateStr} бит.`,
+      '⏳ Ожидание ответа оппонента...',
       tip
     ])
   }

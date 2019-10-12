@@ -1,25 +1,22 @@
 export default class {
-  constructor () {
-    Object.assign(this, {
-      name: 'обновление',
-      description: 'лог изменений',
-      emoji: '📑',
-      arguments: {
-        version: { name: 'версия', type: 'string', optional: true }
-      }
-    })
+  name = 'обновление'
+  description = 'лог изменений'
+  emoji = '📑'
+  arguments = {
+    version: { name: 'версия', type: 'string', optional: true }
   }
 
   async handler (ctx) {
+    const versions = await ctx.henta.util.loadSettings('updates.json')
     const version = ctx.params.version || require(`${ctx.henta.botdir}/package.json`).version
-    const updatePost = ctx.assert(
-      require(`${ctx.henta.botdir}/updates.json`)[version],
-      'Данная версия не найдена.'
-    )
+    const updatePost = versions[version]
+    if (!updatePost) {
+      return ctx.answer(`Данная версия не найдена.`)
+    }
 
-    ctx.answer({
-      message: `📑 Версия: ${version}`,
-      attachment: updatePost
-    })
+    ctx.builder()
+      .text(`📑 Версия: ${version}`)
+      .attach(updatePost)
+      .answer()
   }
 }
