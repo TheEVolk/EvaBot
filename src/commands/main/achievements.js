@@ -15,8 +15,8 @@ export default class {
     const unlocked = await Achievement.findAll({ where: { vkId: ctx.user.vkId } })
 
     ctx.builder()
-      .text(`🏅 Открыто ${unlockedCount}/${list.length} достижений.`)
-      .lines(list.map(v => 
+      .text(`🏅 Открыто ${unlocked.count}/${list.length} достижений.`)
+      .lines(list.map(v =>
         this.drawAchievement(v, unlocked.find(a => a.slug === v.slug))
       ))
       .answer()

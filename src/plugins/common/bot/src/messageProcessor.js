@@ -1,7 +1,6 @@
 import compose from 'middleware-io'
 import applyContextMethods from './messageContext'
 import handleError from './errorHandler'
-import getHandlers from './defaultMiddleware'
 import EventEmitter from 'events'
 
 export default class MessageProcessor extends EventEmitter {
@@ -15,15 +14,9 @@ export default class MessageProcessor extends EventEmitter {
 
   async init (bot) {
     const handlersQueue = await bot.henta.util.loadSettings('bot/handlers.json')
-    const sortedHandlers = handlersQueue.map(v => this.handlers.get(v))
-
-    this.middleware = compose([
-      ...getHandlers(bot),
-      ...sortedHandlers
-    ])
+    this.middleware = compose(handlersQueue.map(v => this.handlers.get(v)))
 
     bot.henta.vk.updates.on('message', (ctx, next) => this.process(ctx, next))
-    // bot.henta.vk.on('message_new', msg => this.process(msg))
   }
 
   async process (ctx, next) {
@@ -33,8 +26,10 @@ export default class MessageProcessor extends EventEmitter {
       }
     }
 
+    this.bot.henta.log(`${ctx.senderId}: ${ctx.text || '<текст отсутствует>'}`)
+    applyContextMethods(ctx, this.bot.henta)
+
     try {
-      applyContextMethods(ctx, this.bot.henta)
       await this.middleware(ctx, () => {})
     } catch (err) {
       this.emit('processError', ctx, err)

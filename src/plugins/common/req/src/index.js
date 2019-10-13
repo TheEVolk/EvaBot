@@ -87,7 +87,7 @@ export default class {
 
   getFreeCode () {
     const symbols = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'
-    const getSymbol = () => this.henta.utils.randomElement(symbols)
+    const getSymbol = () => symbols[Math.floor(Math.random() * symbols.length)]
     while (true) {
       const code = `${getSymbol()}${getSymbol()}`
       if (!Array.from(this.requests).find((i) => i.code === code)) {
