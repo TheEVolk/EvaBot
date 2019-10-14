@@ -71,7 +71,8 @@ export default class extends EventEmitter {
   */
   async create (vkId) {
     const vkUser = (await this.henta.vk.api.users.get({ user_ids: vkId }))[0]
-    const user = new this.User({ vkId, firstName: vkUser.first_name, lastName: vkUser.last_name })
+    const User = this.User.model // Ну ёб*ный в рот..
+    const user = new User({ vkId, firstName: vkUser.first_name, lastName: vkUser.last_name })
     this.applyMethodGroups(user)
     this.emit('create', user)
     this.henta.log(`Новый пользователь: ${user.firstName} ${user.lastName} (${user.getUrl()})`)

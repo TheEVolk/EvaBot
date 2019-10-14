@@ -1,5 +1,5 @@
-import Sequelize from 'sequelize'
 import initBotcmdType from './botcmdType'
+import initUserMethods from './userMethods'
 
 export default class {
   constructor (henta) {
@@ -7,15 +7,8 @@ export default class {
   }
 
   init (henta) {
-    const usersPlugin = henta.getPlugin('common/users')
-
-    usersPlugin.field('money', {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      defaultValue: 10000
-    })
-
     initBotcmdType(this)
+    initUserMethods(this)
   }
 
   briefNumber (number) {

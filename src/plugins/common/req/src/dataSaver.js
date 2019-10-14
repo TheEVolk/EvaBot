@@ -10,6 +10,6 @@ export default async function startDataSaver (plugin) {
   const requestsSaves = await redisPlugin.getObject('requests')
   if (requestsSaves) {
     plugin.requests = new Set(requestsSaves)
-    plugin.henta.log(`Заявки успешно восстановлены. (${plugin.requests.length} шт.)`)
+    plugin.henta.log(`Заявки успешно восстановлены. (${plugin.requests.size} шт.)`)
   }
 }

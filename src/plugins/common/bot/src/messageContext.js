@@ -50,4 +50,6 @@ export default function applyContextMethods (ctx, henta) {
   ctx.henta = henta
   ctx.getPlugin = henta.getPlugin
   ctx.getPayloadValue = getPayloadValue
+  ctx.vk = henta.vk
+  ctx.api = henta.vk.api
 }

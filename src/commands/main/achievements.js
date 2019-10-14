@@ -14,8 +14,13 @@ export default class {
     const { list, Achievement } = ctx.getPlugin('systems/achievements')
     const unlocked = await Achievement.findAll({ where: { vkId: ctx.user.vkId } })
 
+    /* Achievement.destroy({
+      where: {},
+      truncate: true
+    }) */
+
     ctx.builder()
-      .text(`🏅 Открыто ${unlocked.count}/${list.length} достижений.`)
+      .text(`🏅 Открыто ${unlocked.length}/${list.length} достижений.`)
       .lines(list.map(v =>
         this.drawAchievement(v, unlocked.find(a => a.slug === v.slug))
       ))

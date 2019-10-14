@@ -1,6 +1,6 @@
 {
   "name": "henta-evabot",
-  "version": "10.0.5",
+  "version": "10.1.0-ALPHA",
   "description": "",
   "main": "index.js",
   "scripts": {

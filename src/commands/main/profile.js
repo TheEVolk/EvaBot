@@ -14,13 +14,13 @@ export default class {
     const unlockedCount = await Achievement.count({ where: { vkId: ctx.user.vkId } })
 
     ctx.answer([
-      `👀 ${target}:`,
-      `🏅 Открыто ${unlockedCount}/${list.length} достижений.`
-      // target.role !== 'user' && `🔑 Роль: ${await target.getRoleName()};`,
-      // `💳 Баланс: ${target.getBalance()} бит;`,
+      `👀 Профиль ${target}:`,
+      target.role !== 'user' && `🔑 Роль: ${target.pex.get().title}.`,
+      `💳 Баланс: ${target.moneys.getBrief()} бит.`,
+      `🏅 Ачивок: ${unlockedCount}/${list.length} шт.`,
+      `✨ ${target.level} ур. (${target.lvl.getProgress()}%).`
       // target.job && `💼 Работа: ${target.getJob().name};`,
       // `🏙 Город: ${target.getPosition()};`,
-      // `✨ ${target.level} ур. (${target.getScoreProgress()}%).`
     ])
   }
 }

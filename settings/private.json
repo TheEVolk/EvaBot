@@ -2,6 +2,7 @@
 	"vk": {
     "token": "a1d7e845399fcc2a9e296fbb7e86fa5c9f43f247fbc8a402793c2bb354c74fa7407906b0fb556b1206476"
   },
+  "pageToken": "267159e409bceb32fc4c587f5b31448f6f66a297439c99f717372e19e0ec010dd7b8439dbe66240692869",
   "database": {
     "name": "db_eva",
     "user": "eva",

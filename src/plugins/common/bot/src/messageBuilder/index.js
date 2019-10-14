@@ -35,6 +35,10 @@ export default class MessageBuilder {
   }
 
   line (text) {
+    if (!text) {
+      return
+    }
+
     return this.manageText((str) => str ? `${str}\n${text}` : text)
   }
 

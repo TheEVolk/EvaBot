@@ -1,9 +1,21 @@
-export default function handleError (rawContext, err, henta) {
-  henta.error(`${err.stack}`)
-  /* if (ctx.user.isCan('getErrors')) {
-    return ctx.send(e.stack)
-  } */
+export default function handleError (plugin, ctx, err) {
+  plugin.henta.error(`${err.stack}`)
+  if (ctx.user.pex.is('get-errors')) {
+    return ctx.send(err.stack)
+  }
 
-  // this.admin.send([`⚠ ${ctx.user.getUrl()}: ${ctx.msg.text}`, `${e.stack}`])
-  // if (ctx.getConfigValue('user_error')) { ctx.send(ctx.getConfigValue('user_error')) }
+  report(plugin, err, ctx)
+  if (plugin.settings.errorMessage) {
+    ctx.send(plugin.settings.errorMessage)
+  }
+}
+
+async function report (plugin, err, ctx) {
+  const usersPlugin = plugin.henta.getPlugin('common/users')
+  const recipient = await usersPlugin.get(plugin.settings.sendErrorsTo)
+  recipient.send([
+    `⚠ ${ctx.user} совершил ошибку:`,
+    `📟 Текст: ${ctx.text || '<текст отсутствует>'}`,
+    `🧨 Ошибка: ${err.stack}`
+  ])
 }

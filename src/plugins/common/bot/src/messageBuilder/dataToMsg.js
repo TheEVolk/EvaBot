@@ -5,7 +5,7 @@ export default function makeMsg (data) {
 
   const msgData = Array.isArray(data) ? { message: data } : data
   if (msgData.message && Array.isArray(msgData.message)) {
-    msgData.message = msgData.message.join('\n')
+    msgData.message = msgData.message.filter(v => !!v).join('\n')
   }
 
   return msgData

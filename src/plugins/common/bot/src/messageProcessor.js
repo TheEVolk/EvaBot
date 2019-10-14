@@ -33,7 +33,7 @@ export default class MessageProcessor extends EventEmitter {
       await this.middleware(ctx, () => {})
     } catch (err) {
       this.emit('processError', ctx, err)
-      handleError(ctx, err, this.bot.henta)
+      handleError(this.bot, ctx, err)
     }
 
     await next()
