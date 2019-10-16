@@ -1,9 +1,9 @@
 import compose from 'middleware-io'
 import applyContextMethods from './messageContext'
 import handleError from './errorHandler'
-import EventEmitter from 'events'
+import AwaitEventEmitter from 'await-event-emitter'
 
-export default class MessageProcessor extends EventEmitter {
+export default class MessageProcessor extends AwaitEventEmitter {
   constructor (bot) {
     super()
     Object.assign(this, {
@@ -27,7 +27,7 @@ export default class MessageProcessor extends EventEmitter {
     }
 
     this.bot.henta.log(`${ctx.senderId}: ${ctx.text || '<текст отсутствует>'}`)
-    applyContextMethods(ctx, this.bot.henta)
+    applyContextMethods(ctx, this.bot)
 
     try {
       await this.middleware(ctx, () => {})

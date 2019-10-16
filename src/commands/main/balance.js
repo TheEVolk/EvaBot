@@ -10,8 +10,8 @@ export default class {
     const target = ctx.params.target || ctx.user
 
     ctx.answer([
-      target === ctx.user ? `${target.emoji} ${target.r()}:` : null,
-      `💳 ${target.money.toLocaleString()} бит.`
+      target === ctx.user && `💲 Баланс ${target}:`,
+      `💳 ${target.money.toLocaleString('ru')} бит.`
     ])
   }
 }

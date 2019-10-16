@@ -45,6 +45,11 @@
         "repo": "github:hentaplugins/redis"
     },
     {
+        "name": "imageCache",
+        "category": "common",
+        "repo": "github:hentaplugins/imageCache"
+    },
+    {
         "name": "betaNotify",
         "category": "bot"
     },

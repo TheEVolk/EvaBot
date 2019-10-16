@@ -9,6 +9,26 @@ export default class {
   init (henta) {
     initBotcmdType(this)
     initUserMethods(this)
+
+    const { messageProcessor } = henta.getPlugin('common/bot')
+    messageProcessor.handlers.set('write-balance', this.writeBalance.bind(this))
+    messageProcessor.on('answer', this.balanceLine.bind(this))
+  }
+
+  writeBalance (ctx, next) {
+    ctx.lastBalance = ctx.user.money
+    return next()
+  }
+
+  balanceLine (ctx, builder) {
+    if (ctx.lastBalance === ctx.user.money) {
+      return
+    }
+
+    const diff = ctx.user.money - ctx.lastBalance
+    const briefedDiff = this.briefNumber(Math.abs(diff))
+    const briefedBalance = this.briefNumber(ctx.user.money)
+    builder.line(`${diff > 0 ? '➕' : '➖'} ${briefedDiff} бит (${briefedBalance}).`)
   }
 
   briefNumber (number) {

@@ -56,6 +56,7 @@ export default class ArgumentParser {
         return [error, result]
       }
 
+      index++
       params.set(name, result)
     }
 

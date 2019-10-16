@@ -3,6 +3,12 @@
     "slug": "itsMe",
     "title": "Ит'c ми",
     "description": "посмотреть свой профиль",
-    "bonus": 5000
+    "bonus": 15000
+  },
+  {
+    "slug": "loterry-winner",
+    "title": "Лотерейный билетик",
+    "description": "выиграть 1КК в лотерее",
+    "bonus": 1000000
   }
 ]

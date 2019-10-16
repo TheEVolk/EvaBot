@@ -1,30 +1,38 @@
-export default async function sendNotification (user, achievement) {
-  /* const backgroundImage = await loadImage(`./res/img/achievement.png`)
+import { createCanvas, loadImage, registerFont } from 'canvas'
 
-  const canvas = createCanvas(540, 411)
+registerFont('res/font/cleanwork.ttf', { family: 'Cleanwork' })
+registerFont('res/font/bork-display.otf', { family: 'Bork Display' })
+
+export default async function sendNotification (user, achievement) {
+  const imageCachePlugin = this.henta.getPlugin('common/imageCache')
+  const image = await imageCachePlugin.get(
+    `achievement:${achievement.slug}`,
+    () => generateImage(achievement)
+  )
+
+  user.sendBuilder()
+    .text(`🎇 Вы открыли новое достижение «${achievement.title}»!`)
+    .attach(image)
+    .send()
+}
+
+async function generateImage (achievement) {
+  const backgroundImage = await loadImage(`./res/img/achievement.png`)
+  const emojiImage = await loadImage(`./res/img/achievement/${achievement.slug}.png`)
+  const canvas = createCanvas(1590, 900)
   const context = canvas.getContext('2d')
 
   context.drawImage(backgroundImage, 0, 0)
+  context.drawImage(emojiImage, 645, 160, 300, 300) // 300
 
   context.textAlign = 'center'
-  context.shadowOffsetX = 3
-  context.shadowOffsetY = 3
-  context.shadowBlur = 20
-  context.shadowColor = 'black'
-  context.fillStyle = 'white'
+  context.fillStyle = 'black'
 
-  context.font = `35px bold Bork Display`
-  context.fillText('Новое достижение!', 270, 250)
+  context.font = `120px bold Cleanwork`
+  context.fillText(achievement.title, 795, 660)
 
-  context.font = `28px Bork Display`
-  context.fillText(achievement.title, 270, 330)
+  context.font = `50px Bork Display`
+  context.fillText(achievement.description, 795, 760)
 
-  context.font = `18px Bork Display`
-  context.fillStyle = 'rgb(200,200,200)'
-  context.fillText(achievement.description, 270, 360)
-*/
-  user.sendBuilder()
-    .text(`🎇 Вы открыли новое достижение «${achievement.title}»!`)
-    // .attachCanvas(canvas)
-    .send()
+  return canvas.toBuffer()
 }

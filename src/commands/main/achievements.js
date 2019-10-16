@@ -20,7 +20,7 @@ export default class {
     }) */
 
     ctx.builder()
-      .text(`🏅 Открыто ${unlocked.length}/${list.length} достижений.`)
+      .text(`🏅 Открыто ${unlocked.length}/${list.length} ачивок:`)
       .lines(list.map(v =>
         this.drawAchievement(v, unlocked.find(a => a.slug === v.slug))
       ))

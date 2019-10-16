@@ -1,6 +1,6 @@
 import createMessageBuilder from './messageBuilder/creator'
 
-function answer (response) {
+async function answer (response) {
   if (this.answered) {
     throw Error('На это сообщение бот уже вернул ответ.')
   }
@@ -11,6 +11,8 @@ function answer (response) {
     peerId: this.peerId,
     vk: this.henta.vk
   })
+
+  await this.bot.messageProcessor.emit('answer', this, messageBuilder)
 
   return messageBuilder.send()
 }
@@ -43,13 +45,14 @@ function getPayloadValue (field) {
   return this.messagePayload && this.messagePayload[field]
 }
 
-export default function applyContextMethods (ctx, henta) {
+export default function applyContextMethods (ctx, bot) {
+  ctx.bot = bot
   ctx.answer = answer
   ctx.send = send
   ctx.builder = builder
-  ctx.henta = henta
-  ctx.getPlugin = henta.getPlugin
+  ctx.henta = bot.henta
+  ctx.getPlugin = bot.henta.getPlugin
   ctx.getPayloadValue = getPayloadValue
-  ctx.vk = henta.vk
-  ctx.api = henta.vk.api
+  ctx.vk = bot.henta.vk
+  ctx.api = bot.henta.vk.api
 }

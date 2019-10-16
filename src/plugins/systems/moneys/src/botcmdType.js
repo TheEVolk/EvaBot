@@ -9,6 +9,10 @@ export default async function initBotcmdType (plugin) {
       return [true, '⛔ Недостаточно бит.']
     }
 
+    if (value < (data.min || 1)) {
+      return [true, `⛔ Нельзя указывать меньше ${data.min || 1} бит.`]
+    }
+
     return [false, value]
   })
 }

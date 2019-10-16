@@ -2,6 +2,7 @@
   "check-mentions",
   "show-beta-notify",
   "connect-user",
+  "write-balance",
   "requests",
   "command",
   "commandNotFound"

@@ -1,24 +1,25 @@
 export default class {
-  async get (code, generator, ...args) {
+  constructor (henta) {
+    this.henta = henta
+  }
+
+  async get (code, generator) {
+    const redisPlugin = this.henta.getPlugin('common/redis')
+    const cached = await redisPlugin.get(`imageCache:${code}`)
+    if (cached) {
+      return cached
+    }
+
+    this.henta.log(`Генерация ${code}...`)
+
     const source = typeof generator === 'function'
-      ? generator(...args)
+      ? await generator()
       : generator
 
     const uploaded = await this.henta.vk.upload.messagePhoto({ source })
-    await redisPlugin.set(`images:pet:${type}:${name}:${variety}`, uploaded.toString())
+    await redisPlugin.set(`imageCache:${code}`, uploaded.toString())
+    this.henta.log(`${code} → ${uploaded.toString()}`)
 
     return uploaded.toString()
   }
 }
-// BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH 
-// BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH 
-// BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH 
-// BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH 
-// BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH 
-// BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH 
-// BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH BRUH 
-// У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО
-// BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH
-// У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH
-// BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH
-// У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH У АИСТА МОРОСИТ КРЫША ОН ВЬЁТ ГНЕЗДО ОО BRUH

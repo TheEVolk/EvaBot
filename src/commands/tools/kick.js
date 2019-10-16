@@ -2,6 +2,7 @@ export default class {
   name = 'кик'
   description = 'исключить из беседы'
   emoji = '👞'
+  right = 'kick-user'
   arguments = {
     target: { name: 'игрок', type: 'user' },
     reason: { name: 'причина', type: 'string' }

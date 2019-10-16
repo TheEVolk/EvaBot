@@ -1,6 +1,6 @@
 {
   "name": "henta-evabot",
-  "version": "10.1.0-ALPHA",
+  "version": "10.1.1-ALPHA",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "async-redis": "^1.1.7",
+    "await-event-emitter": "^1.2.0",
     "brain.js": "^2.0.0-alpha.5",
     "canvas": "^2.5.0",
     "cron": "^1.7.1",
