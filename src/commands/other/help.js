@@ -1,46 +1,24 @@
-export default class {
-  constructor () {
-    Object.assign(this, {
-      name: 'помощь',
-      aliases: ['команды', 'хелп'],
-      emoji: '❔',
-      description: 'список команд',
-      subcommands: {
-        категория: {
-          handler: this.categoryHandler,
-          arguments: { slug: { name: 'название', type: 'string' } }
-        }
-      }
-    })
+export default class HelpCommand {
+  name = 'помощь'
+  aliases = ['команды', 'хелп']
+  description = 'список команд'
+  emoji = '❔'
+
+  printCategory (all, category) {
+    const commands = all.filter(v => v.type === category.slug)
+
+    return [
+      category.title + ':',
+      ...commands.map(v => this.printCommand(v))
+    ].join('\n')
   }
 
-  categoryHandler (ctx) {
-    const botcmdPlugin = ctx.getPlugin('common/botcmd')
-    const commands = botcmdPlugin.commands
-      .filter(i => i.type === ctx.params.slug)
-
-    const printCommand = (cmd) => {
-      const args = cmd.arguments ? Object.values(cmd.arguments) : null
-      const useText = args ? args.map(v => v.optional ? '[' + v.name + ']' : '<' + v.name + '>').join(' ') : ''
-      return `⠀⠀${cmd.emoji || '🔵'} ${cmd.name} ${useText === ' ' ? '' : useText}\n⠀⠀↳ ${cmd.description}`
-    }
-
-    ctx.builder()
-      .lines([
-        '📃 Список команд:',
-        ctx.printList(commands, printCommand)
-      ])
-      .answer()
+  printCommand (command) {
+    return `⠀⠀${command.emoji || '📛'} ${command.name} — ${command.description}.`
   }
 
   handler (ctx) {
-    if (ctx.isChat) {
-      return ctx.answer([
-        '💢 Используйте эту команду только в ЛС:',
-        '>> vk.me/bot_eva'
-      ])
-    }
-
+    const botcmdPlugin = ctx.getPlugin('common/botcmd')
     const commandTypes = [
       { slug: 'main', title: '💎 Основные' },
       { slug: 'shop', title: '🛍 Магазины' },
@@ -49,46 +27,14 @@ export default class {
       { slug: 'tools', title: '🛠 Утилиты' }
     ]
 
+    const allCommands = botcmdPlugin.commands
+      .filter(v => !v.private)
+      .filter(v => !v.right || ctx.user.pex.is(v.right))
+
     ctx.builder()
-      .lines([
-        '📃 Категории команд:',
-        ctx.printList(commandTypes, v => `⠀⠀${v.title}`)
-      ])
-      .buttonsList(commandTypes.map(v => ({
-        label: v.title,
-        payload: { botcmd: `помощь категория ${v.slug}` }
-      })))
+      .lines(commandTypes.map(v =>
+        this.printCategory(allCommands, v)
+      ))
       .answer()
   }
 }
-
-/*
-      handler(ctx) {
-        const categories = [
-            { title: '📓 Основные:', tag: 'main' },
-            { title: '🗂 Прочие:', tag: 'other' }
-        ]
-
-        const botcmdPlugin = ctx.getPlugin('common/botcmd')
-
-        const printCommand = (cmd) => {
-            const args = cmd.arguments ? Object.values(cmd.arguments) : null;
-            const useText = args ? args.map(v => v.optional ? '['+v.name+']' : '<'+v.name+'>').join(' ') : '';
-            return `⠀⠀${cmd.emoji || '🔵'} ${cmd.name} ${useText == ' ' ? '' : useText}\n⠀⠀↳ ${cmd.description}`;
-        }
-
-        const printCategory = (category) => {
-            const commands = botcmdPlugin.commands
-              .filter(i => i.type === category.tag)
-
-            return [
-                `${category.title}`,
-                ...commands.map(printCommand)
-            ].join('\n')
-        }
-
-        ctx.answer([
-            'список команд бота:',
-            ...categories.map(printCategory)
-        ])
-    } */

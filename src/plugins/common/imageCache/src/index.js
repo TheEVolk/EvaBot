@@ -1,4 +1,4 @@
-export default class {
+export default class ImageCachePlugin {
   constructor (henta) {
     this.henta = henta
   }
@@ -12,14 +12,13 @@ export default class {
 
     this.henta.log(`Генерация ${code}...`)
 
-    const source = typeof generator === 'function'
-      ? await generator()
-      : generator
-
+    const source = generator ? await generator() : code
     const uploaded = await this.henta.vk.upload.messagePhoto({ source })
-    await redisPlugin.set(`imageCache:${code}`, uploaded.toString())
-    this.henta.log(`${code} → ${uploaded.toString()}`)
+    const uploadedStr = uploaded.toString()
 
-    return uploaded.toString()
+    await redisPlugin.set(`imageCache:${code}`, uploadedStr)
+    this.henta.log(`${code} → ${uploadedStr}`)
+
+    return uploadedStr
   }
 }

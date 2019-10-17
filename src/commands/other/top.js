@@ -1,7 +1,5 @@
 import { Op } from 'sequelize'
 
-const emoji = ['🥇', '🥈', '🥉', '🏅', '🏅']
-
 export default class {
   name = 'топ'
   description = 'богатые игроки'
@@ -18,7 +16,7 @@ export default class {
       .lines(users.map(
         (v, i) => `${i + 1}⃣  ${v} — ${briefNumber(v.money)}`)
       )
-      //`\n🔼 Вы №${await usersPlugin.User.count({ where: { money: { [Op.gte]: ctx.user.money } } })} в топе!`
+      .line(`\n🔼 Вы №${await User.count({ where: { money: { [Op.gte]: ctx.user.money } } })} в топе!`)
       .answer()
   }
 }

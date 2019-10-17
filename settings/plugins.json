@@ -50,6 +50,11 @@
         "repo": "github:hentaplugins/imageCache"
     },
     {
+        "name": "onlineStatus",
+        "category": "common",
+        "repo": "github:hentaplugins/onlineStatus"
+    },
+    {
         "name": "betaNotify",
         "category": "bot"
     },

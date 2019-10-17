@@ -3,7 +3,12 @@ export default class {
   description = 'стабильный доход'
   emoji = '💼'
 
-  handler (ctx) {
+  async handler (ctx) {
+    const imageCachePlugin = ctx.getPlugin('common/imageCache')
+    ctx.builder()
+      .attach(imageCachePlugin.get('res/img/indev.png'))
+      .answer()
+    /*
     const job = ctx.user.getJob()
     if (!job) {
       return ctx.builder()
@@ -15,7 +20,7 @@ export default class {
     ctx.builder()
       .line(`💼 Ваша работа: ${job.name}`)
       .line(`💲 Ваша ЗП: ${job.payday}`)
-      .answer()
+      .answer() */
   }
 }
 
