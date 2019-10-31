@@ -1,7 +1,10 @@
 export default function loadDefaultTypes (parser) {
   // Integer
   parser.add('integer', data => {
-    const value = parseInt(data.arg)
+    const value = parseInt(data.word)
+    if (isNaN(value)) {
+      return [true, 'Вы указали не число']
+    }
 
     if (data.argument.positive && value <= 0) {
       return [true, 'botcmd:numberNotPositive']
@@ -38,4 +41,19 @@ export default function loadDefaultTypes (parser) {
 
     return [false, str]
   })
+  
+  parser.add('word', data => {
+    const str = data.word
+
+    if (data.argument.max && str.length > data.argument.max) {
+      return [true, 'botcmd:stringMax']
+    }
+
+    if (data.argument.min && str.length < data.argument.min) {
+      return [true, 'botcmd:stringMin']
+    }
+
+    return [false, str]
+  })
+  
 }

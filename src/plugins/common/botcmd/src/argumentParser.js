@@ -39,7 +39,7 @@ export default class ArgumentParser {
     const params = new Map()
     for (const [name, argument] of Object.entries(argList)) {
       // Optional arguments
-      if (!ctx.args[index + 1]) {
+      if (ctx.args.length <= index) {
         break
       }
 

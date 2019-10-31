@@ -12,6 +12,7 @@ export default function initUsersMethods (plugin) {
       await plugin.Achievement.create({ slug, vkId: self.vkId })
       const achievement = plugin.get(slug)
       self.money += achievement.bonus
+      self.lvl.addScore(Math.floor(Math.random() * 100))
       plugin.sendNotification(self, achievement)
     })
     .method('unlockIf', async (self, slug, condition) => {

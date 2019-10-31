@@ -13,6 +13,10 @@ export default class {
     initUserMethods(this)
   }
 
+  get (slug) {
+    return this.fromSlug[slug]
+  }
+
   isAllow (roleSlug, right) {
     return this.isRoleAllow(this.fromSlug[roleSlug], right)
   }

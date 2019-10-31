@@ -34,6 +34,7 @@ export default class SlotsCommand {
 
     ctx.user.money -= ctx.params.rate
     ctx.user.money += Math.floor(ctx.params.rate * coff)
+    ctx.user.lvl.addScore(Math.floor(Math.random() * 5 * coff))
 
     // Achievements
     ctx.user.achievements.unlockIf(

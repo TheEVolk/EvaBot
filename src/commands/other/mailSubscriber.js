@@ -5,12 +5,12 @@ export default class {
       description: 'управление подпиской на рассылку',
       emoji: '📣',
 
-      subcommands: {
+      /* subcommands: {
         сменить: {
           handler: this.changeHandler,
           arguments: { slug: { type: 'string' } }
         }
-      }
+      } */
     })
   }
 

@@ -2,6 +2,6 @@
   "name": "EvaBot",
   "script": "index.js",
   "args": ["--color"],
-  "watch": ["src"],
-  "node_args": "-r esm"
+  "node_args": "-r esm",
+  "watch": false
 }

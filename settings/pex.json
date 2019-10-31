@@ -11,10 +11,10 @@
     "slug": "mainAdministrator",
     "title": "Глав. админ",
     "emoji": "🕶",
-    "includes": [ "mainAdministrator" ],
+    "includes": [ "administrator" ],
     "data": {
       "allow": [
-        "command:setrole"
+        "command:set-role"
       ]
     }
   },
@@ -36,7 +36,8 @@
     "data": {
       "allow": [
         "command:kick-user",
-        "command:ban-user"
+        "command:ban-user",
+        "command:set-nick"
       ],
       "values": {
         "max-ban-time": 86400

@@ -1,34 +1,32 @@
-export default class {
-  constructor (henta) {
-    Object.assign(this, {
-      name: 'сетроль',
-      arguments: {
-        target: { name: 'игрок', type: 'user' },
-        role: { name: 'роль', type: 'string', optional: true }
-      },
-      type: 'tools',
-      right: 'setrole'
-    })
+export default class SetRoleCommand {
+  name = 'сетроль'
+  description = 'изменить роль'
+  emoji = '🔐'
+  right = 'set-role'
+  arguments = {
+    target: { name: 'пользователь', type: 'user' },
+    role: { name: 'роль', type: 'string', optional: true }
   }
 
   async handler (ctx) {
-    const newRole = ctx.params.role || 'user'
-    ctx.assert(
-      ctx.getPlugin('common/roles').roles[newRole],
-      '⛔ Такой роли не существует.'
-    )
+    const newRoleSlug = ctx.params.role || 'user'
+    const newRole = ctx.getPlugin('common/pex').get(newRoleSlug)
+    if (!newRole) {
+      return ctx.answer('⛔ Такой роли не существует.')
+    }
 
-    const oldRoleName = ctx.params.target.getRoleName()
-    ctx.params.target.role = newRole
+    const oldRoleName = ctx.params.target.pex.get().name
+    ctx.params.target.role = newRoleSlug
     ctx.params.target.save()
 
     ctx.params.target.send([
-      '🎫 Новая роль:',
-      `⬛ ${oldRoleName} » ${ctx.params.target.getRoleName()}.`
+      `🎫 ${ctx.user} изменил вашу роль:`,
+      `⬛ ${oldRoleName} » ${newRole.name}.`
     ])
+
     ctx.answer([
-      `🎫 Новая роль для ${ctx.params.target.r()}:`,
-      `⬛ ${oldRoleName} » ${ctx.params.target.getRoleName()}.`
+      `🎫 Новая роль для ${ctx.params.target}:`,
+      `⬛ ${oldRoleName} » ${newRole.name}.`
     ])
   }
 }

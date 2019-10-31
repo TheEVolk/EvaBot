@@ -4,6 +4,8 @@ import initUserMethods from './userMethods'
 export default class {
   constructor (henta) {
     this.henta = henta
+
+    this.diffLine = this.diffLine.bind(this)
   }
 
   init (henta) {
@@ -26,9 +28,13 @@ export default class {
     }
 
     const diff = ctx.user.money - ctx.lastBalance
+    builder.line(this.diffLine(ctx.user, diff))
+  }
+
+  diffLine (user, diff) {
     const briefedDiff = this.briefNumber(Math.abs(diff))
-    const briefedBalance = this.briefNumber(ctx.user.money)
-    builder.line(`${diff > 0 ? '➕' : '➖'} ${briefedDiff} бит (${briefedBalance}).`)
+    const briefedBalance = this.briefNumber(user.money)
+    return `${diff > 0 ? '➕' : '➖'} ${briefedDiff} бит (${briefedBalance}).`
   }
 
   briefNumber (number) {

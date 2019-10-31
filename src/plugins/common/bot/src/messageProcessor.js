@@ -12,8 +12,15 @@ export default class MessageProcessor extends AwaitEventEmitter {
     })
   }
 
-  async init (bot) {
+  async start (bot) {
     const handlersQueue = await bot.henta.util.loadSettings('bot/handlers.json')
+    // Check
+    handlersQueue.forEach(v => {
+      if (!this.handlers.get(v)) {
+        throw Error(`Обработчик ${v} не существует.`)
+      }
+    })
+    
     this.middleware = compose(handlersQueue.map(v => this.handlers.get(v)))
 
     bot.henta.vk.updates.on('message', (ctx, next) => this.process(ctx, next))

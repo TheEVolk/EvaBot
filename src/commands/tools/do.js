@@ -1,24 +1,19 @@
-export default class {
-  constructor (henta) {
-    Object.assign(this, {
-      henta: henta,
-      name: '$',
-      arguments: {
-        code: { name: 'код', type: 'string' }
-      },
-      type: 'tools',
-      description: 'выполнить код',
-      right: 'do'
-    })
+export default class DoCommand {
+  name = '$'
+  description = 'выполнить код'
+  emoji = '💻'
+  right = 'do'
+  arguments = {
+    code: { name: 'код', type: 'string' }
   }
 
   async handler (ctx) {
     const attachment = (str) => { ctx.send({ attachment: str }) }
+    const getPlugin = (str) => ctx.getPlugin(str)
 
     try {
       if (!ctx.params.code.includes('\n') && !ctx.params.code.includes('=')) {
         ctx.params.code = `return ${ctx.params.code}`
-
         const func = eval('(async () => {' + ctx.params.code + '})')
 
         const startTime = Date.now()

@@ -1,31 +1,75 @@
 import { Keyboard } from 'vk-io'
+import { Op } from 'sequelize'
 
-class SActions {
-  name = 'действия'
+class OtherSubcommand {
+  name = 'прочее'
 
-  async handler (ctx) {
-    await ctx.user.assertPet(ctx, 'have')
-
+  handler (ctx) {
     ctx.builder()
-      .text('🔑 Список доступных действий:')
+      .text('⬜ Используйте кнопки для навигации.')
       .keyboard(Keyboard.builder()
-        .textButton({ label: `🏈 Играть`, payload: { command: 'пит играть' } })
+        .textButton({ label: `Топ`, payload: { command: 'пит топ' } })
         .row()
-        .textButton({ label: 'Назад', payload: { command: 'пит' } })
+        .textButton({ label: `Назад`, payload: { command: 'пит' } })
+        .oneTime()
       )
-      .answer({ mainMenuRow: false })
+      .answer()
   }
 }
 
-export default class {
+class TopSubcommand {
+  name = 'топ'
+
+  async handler (ctx) {
+    const { Pet } = ctx.getPlugin('systems/pets')
+
+    const myPet = await ctx.user.pets.get()
+    const myPetPos = myPet && await Pet.count({ where: { rating: { [Op.gte]: myPet.rating } } })
+
+    const pets = await Pet.findAll({ order: [['rating', 'DESC']], limit: 5 })
+
+    ctx.builder()
+      .text('📊 Топ 5 питомцев:')
+      .lines(pets.map(
+        (v, i) => `${i + 1}⃣ [id${v.ownerVkId}|${v.name}]\n— ${v.rating} ед.`
+      ))
+      .line(myPet && `\n🔼 Ваш №${myPetPos} в топе!`)
+      .keyboard(Keyboard.builder()
+        .textButton({ label: `Назад`, payload: { command: 'пит' } })
+        .oneTime()
+      )
+      .answer()
+  }
+}
+
+export default class PetCommand {
   name = 'пит'
   description = 'твой питомец'
   emoji = '🐾'
-  subcommands = [SActions]
+  subcommands = [
+    new OtherSubcommand(),
+    new TopSubcommand()
+  ]
 
   async handler (ctx) {
+    if (!ctx.user.pex.is('indev')) {
+      return ctx.builder()
+        .photo('res/img/indev.png')
+        .answer()
+    }
+
+    const pet = await ctx.user.pets.get()
+    
     ctx.builder()
-      .photo('res/img/indev.png')
+      .lines([
+        `${pet.kind.emoji} ${pet.name}`,
+        `✨ Рейтинг: ${pet.rating} ед.`,
+        `⚡ Сила: ${pet.force} ед.`
+      ])
+      .keyboard(Keyboard.builder()
+        .textButton({ label: `Прочее`, payload: { command: 'пит прочее' } })
+        .oneTime()
+      )
       .answer()
   }
 }

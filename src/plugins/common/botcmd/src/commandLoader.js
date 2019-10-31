@@ -1,55 +1,81 @@
-import ProgressBar from 'progress'
-import fs from 'fs'
+import readdirp from 'readdirp'
+import chokidar from 'chokidar'
+import clearModule from 'clear-module'
 
-export default async function loadCommands (henta) {
-  const commandList = await readDir(`${henta.botdir}/src/commands`)
+export default class CommandLoader {
+  aliases = new Map()
 
-  const bar = new ProgressBar('Загрузка команд [:bar] :current/:total (:command)', {
-    complete: '=',
-    incomplete: ' ',
-    width: 30,
-    total: commandList.size
-  })
-
-  henta.logger.setBar(bar)
-
-  const commands = new Set()
-
-  for (const command of commandList) {
-    bar.tick({ command })
-    commands.add(await loadCommand(command))
+  constructor (plugin) {
+    this.plugin = plugin
+    this.henta = plugin.henta
   }
 
-  bar.terminate()
-  henta.log(`Команды успешно загружены (${commandList.size} шт.)`)
-  return Array.from(commands)
-}
+  initWatcher () {
+    const watcher = chokidar.watch(`${this.henta.botdir}/src/commands`, {
+      awaitWriteFinish: {
+        stabilityThreshold: 500
+      }
+    })
+    watcher.on('change', async (path) => {
+      const command = this.commands.find(v => v.path === path)
+      if (!command) {
+        return
+      }
 
-async function readDir (dirPath) {
-  const files = new Set()
-  const dir = fs.readdirSync(dirPath)
-  await Promise.all(dir.map(async v => {
-    const filePath = `${dirPath}/${v}`
-    if (fs.lstatSync(filePath).isDirectory()) {
-      const nextDir = await readDir(filePath)
-      nextDir.forEach(v => files.add(v))
-    } else {
-      files.add(filePath)
+      this.henta.log(`Перезагрузка ${path}...`)
+      // Clear
+      this.commands = this.commands.filter(v => v !== command)
+      this.aliases.delete(command.name)
+      if (command.aliases) {
+        command.aliases.forEach(v => { this.aliases.delete(v) })
+      }
+
+      if (command.clear) {
+        await command.clear(this.henta)
+      }
+
+      clearModule(path)
+
+      // Load
+      const newCommand = await this.loadCommand(path)
+      if (newCommand.init) {
+        await newCommand.init(this.henta)
+      }
+
+      this.commands.push(newCommand)
+      this.henta.log(`${path} перезагружен.`)
+    })
+  }
+
+  async loadCommands () {
+    const commandList = await readdirp.promise(`${this.henta.botdir}/src/commands`)
+    this.commands = await Promise.all(commandList.map(v => this.loadCommand(v.fullPath)))
+    await Promise.all(this.commands.map(v => v.init && v.init(this.henta)))
+    this.henta.log(`Команды успешно загружены (${this.commands.length} шт.)`)
+  }
+
+  async loadCommand (path) {
+    try {
+      const commandModule = await import(path)
+      const CommandClass = commandModule['default'] || commandModule
+      const command = new CommandClass()
+
+      const tokens = path.split('/')
+      command.type = tokens[tokens.length - 2]
+      command.path = path
+      if (command.subcommands) {
+        command.subcommandsAliases = {}
+        command.subcommands.forEach(v => { command.subcommandsAliases[v.name] = v })
+      }
+
+      this.aliases.set(command.name, command)
+      if (command.aliases) {
+        command.aliases.forEach(v => { this.aliases.set(v, command) })
+      }
+
+      return command
+    } catch (e) {
+      throw Error(`Ошибка в команде ${path}: ${e.stack}`)
     }
-  }))
-
-  return files
-}
-
-async function loadCommand (path) {
-  try {
-    const commandModule = await import(path)
-    const CommandClass = commandModule['default'] || commandModule
-    const command = new CommandClass()
-
-    command.type = path.split('/')[path.split('/').length - 2].split('.')[0]
-    return command
-  } catch (e) {
-    throw Error(`Ошибка в команде ${path}: ${e.stack}`)
   }
 }

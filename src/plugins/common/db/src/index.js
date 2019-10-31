@@ -29,7 +29,7 @@ export default class extends Sequelize {
   }
 
   async safeSync (model) {
-    return
+    // return
     
     await model.sync()
     const options = model.options

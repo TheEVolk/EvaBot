@@ -1,11 +1,8 @@
-export default class {
-  constructor () {
-    Object.assign(this, {
-      name: 'жмых',
-      aliases: ['цитата'],
-      description: 'удалённые команды'
-    })
-  }
+export default class BonCommandsCommand {
+  name = 'жмых'
+  aliases = ['цитата']
+  description = 'удалённые команды'
+  private = true
 
   async handler (ctx) {
     ctx.answer([

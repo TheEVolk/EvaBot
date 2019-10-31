@@ -27,7 +27,7 @@ export default class HelpCommand {
       { slug: 'tools', title: '🛠 Утилиты' }
     ]
 
-    const allCommands = botcmdPlugin.commands
+    const allCommands = botcmdPlugin.loader.commands
       .filter(v => !v.private)
       .filter(v => !v.right || ctx.user.pex.is(v.right))
 

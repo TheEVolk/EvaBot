@@ -6,6 +6,8 @@ export default class MessageBuilder {
     if (data) {
       Object.assign(this.msg, makeMsg(data))
     }
+
+    this.msg['disable_mentions'] = this.msg['disable_mentions'] || 1
   }
 
   setContext (context) {

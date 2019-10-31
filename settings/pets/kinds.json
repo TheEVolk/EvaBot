@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "cat",
+    "name": "Кот",
+    "femaleName": "Кошка",
+    "emoji": "🐈",
+    "eatEmoji": "🐟",
+    "isVip": false
+  },
+  {
+    "slug": "dog",
+    "name": "Пёс",
+    "femaleName": "Собака",
+    "emoji": "🐕",
+    "isVip": false
+  },
+  {
+    "slug": "mouse",
+    "name": "Мыш",
+    "femaleName": "Мышь",
+    "emoji": "🐁",
+    "isVip": true
+  },
+  {
+    "slug": "turtle",
+    "name": "Черепаха",
+    "femaleName": "Черепаха",
+    "emoji": "🐢",
+    "isVip": false
+  },
+  {
+    "slug": "gomunkul",
+    "name": "Гомункул",
+    "femaleName": "Гомункулиха",
+    "emoji": "🐛",
+    "isVip": true
+  }
+]

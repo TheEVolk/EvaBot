@@ -1,77 +1,25 @@
 [
-    {
-        "name": "bot",
-        "category": "common",
-        "remote": "github:hentaplugins/bot"
-    },
-    {
-        "name": "botcmd",
-        "category": "common",
-        "repo": "github:hentaplugins/botcmd"
-    },
-    {
-        "name": "db",
-        "category": "common",
-        "repo": "github:hentaplugins/db"
-    },
-    {
-        "name": "users",
-        "category": "common",
-        "repo": "github:hentaplugins/users"
-    },
-    {
-        "name": "nicknames",
-        "category": "common",
-        "repo": "github:hentaplugins/nicknames"
-    },
-    {
-        "name": "mentions",
-        "category": "common",
-        "repo": "github:hentaplugins/mentions"
-    },
-    {
-        "name": "pex",
-        "category": "common",
-        "repo": "github:hentaplugins/pex"
-    },
-    {
-        "name": "req",
-        "category": "common",
-        "repo": "github:hentaplugins/req"
-    },
-    {
-        "name": "redis",
-        "category": "common",
-        "repo": "github:hentaplugins/redis"
-    },
-    {
-        "name": "imageCache",
-        "category": "common",
-        "repo": "github:hentaplugins/imageCache"
-    },
-    {
-        "name": "onlineStatus",
-        "category": "common",
-        "repo": "github:hentaplugins/onlineStatus"
-    },
-    {
-        "name": "betaNotify",
-        "category": "bot"
-    },
-    {
-        "name": "commandNotFound",
-        "category": "bot"
-    },
-    {
-        "name": "moneys",
-        "category": "systems"
-    },
-    {
-        "name": "achievements",
-        "category": "systems"
-    },
-    {
-        "name": "lvl",
-        "category": "systems"
-    }
+    "common/bot",
+    "common/botcmd",
+    "common/db",
+    "common/users",
+    "common/nicknames",
+    "common/mentions",
+    "common/pex",
+    "common/req",
+    "common/redis",
+    "common/imageCache",
+    "common/onlineStatus",
+    "systems/moneys",
+    "systems/achievements",
+    "systems/lvl",
+    "systems/jobs",
+    "systems/pets",
+    "bot/commandNotFound",
+    "bot/postGame",
+    "bot/newPostToChat",
+    "bot/helloChat",
+    "bot/repostBonus",
+    "bot/autodonat",
+    "bot/gameSeeds"
 ]

@@ -1,13 +1,14 @@
 import ArgumentParser from './argumentParser'
-import loadCommands from './commandLoader'
+import CommandLoader from './commandLoader'
 
-export default class {
+export default class BotCmdPlugin {
   constructor (henta) {
     Object.assign(this, {
       henta,
-      argumentParser: new ArgumentParser(henta, this),
-      aliases: {}
+      argumentParser: new ArgumentParser(henta, this)
     })
+
+    this.loader = new CommandLoader(this)
   }
 
   async init (henta) {
@@ -16,17 +17,20 @@ export default class {
     const { messageProcessor } = henta.getPlugin('common/bot')
     messageProcessor.handlers.set('command', this.handler.bind(this))
 
-    this.commands = await loadCommands(henta)
-    this.commands.forEach(command => {
-      this.aliases[command.name] = command
-      if (command.aliases) {
-        command.aliases.forEach(v => { this.aliases[v] = command })
-      }
-    })
+    await this.loader.loadCommands()
+    this.loader.initWatcher()
   }
 
   get (commandName) {
-    return this.aliases[commandName.toLowerCase()]
+    return this.loader.aliases.get(commandName.toLowerCase())
+  }
+
+  getSubcommand (ctx, command) {
+    if (ctx.args.length < 2) {
+      return
+    }
+
+    return command.subcommandsAliases && command.subcommandsAliases[ctx.args[1]]
   }
 
   checkPex (ctx, right, errStr) {
@@ -48,30 +52,31 @@ export default class {
       return next()
     }
 
-    const commandArgs = commandLine.split(' ')
-    const commandName = commandArgs[0]
+    ctx.args = commandLine.split(' ').filter(v => v !== '')
+    const commandName = ctx.args[0]
 
     const command = this.get(commandName)
     if (!command) {
       return next()
     }
 
-    if (!this.checkPex(ctx, command.right)) {
+    const currentCommand = this.getSubcommand(ctx, command) || command
+
+    if (!this.checkPex(ctx, currentCommand.right)) {
       return next()
     }
 
-    ctx.args = commandArgs
-    if (command.arguments) {
-      const [error, res] = await this.argumentParser.parse(ctx, command.arguments, 0)
+    if (currentCommand.arguments) {
+      const [error, res] = await this.argumentParser.parse(ctx, currentCommand.arguments, 0)
       if (error) {
-        ctx.answer((command.errors && command.errors[res]) || res)
+        ctx.answer(res)
         return next()
       }
 
       ctx.params = res
     }
 
-    await command.handler(ctx)
+    await currentCommand.handler(ctx)
     await next()
   }
 }

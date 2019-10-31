@@ -10,6 +10,9 @@ export default class {
 
   async init (henta) {
     this.settings = await henta.util.loadSettings('bot/main.json')
-    await this.messageProcessor.init(this)
+  }
+
+  async start (henta) {
+    await this.messageProcessor.start(this)
   }
 }

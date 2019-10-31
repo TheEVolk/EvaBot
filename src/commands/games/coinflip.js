@@ -1,6 +1,6 @@
 class CoinflipRequestHandler {
   accept (ctx, { source, rate, sendResult }) {
-    const { briefNumber } = ctx.getPlugin('systems/moneys')
+    const { diffLine } = ctx.getPlugin('systems/moneys')
 
     if (ctx.user.money < rate) {
       return ctx.answer(`⛔ Недостаточно бит.`)
@@ -18,13 +18,19 @@ class CoinflipRequestHandler {
     source.save()
 
     sendResult([
-      `🌗 ${source} vs ${ctx.user}:`,
       `💰 ${rate.toLocaleString('ru')} бит.`,
-      `\n⚜ ${winner} победил!`
+      `⚜ ${winner} победил!`
     ])
 
-    winner.send(`➕ ${briefNumber(rate)} [${briefNumber(winner.money)}].`)
-    looser.send(`➖ ${briefNumber(rate)} [${briefNumber(looser.money)}].`)
+    winner.send([
+      '✔ Вы победили в коинфлип!',
+      diffLine(winner, rate)
+    ])
+
+    looser.send([
+      '💢 Вы проиграли в коинфлип.',
+      diffLine(looser, -rate)
+    ])
   }
 
   deny (ctx, { source }) {
@@ -38,13 +44,18 @@ export default class {
   description = 'коинфлип'
   emoji = '🌗'
   arguments = {
-    target: { name: 'профиль', type: 'user' },
+    target: { name: 'профиль', type: 'user', notSelf: false },
     rate: { name: 'ставка', type: 'moneys' }
   }
 
   init (henta) {
-    const requestsPlugin = henta.getPlugin('common/requests')
-    requestsPlugin.set('games:coinflip', new CoinflipRequestHandler())
+    const reqPlugin = henta.getPlugin('common/req')
+    reqPlugin.set('games:coinflip', new CoinflipRequestHandler())
+  }
+
+  clear (henta) {
+    const reqPlugin = henta.getPlugin('common/req')
+    reqPlugin.unset('games:coinflip')
   }
 
   async handler (ctx) {

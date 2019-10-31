@@ -15,13 +15,14 @@ export default class {
     const moders = await usersPlugin.User.findAll({ where: { role: 'moderator' } })
 
     ctx.answer([
-      '🕶 [evabottp|Техническая поддержка].',
-      '⬛ Главный администратор:',
-      `>> ${mainAdmin.emoji} ${mainAdmin.r()}.`,
+      '⬛ Гл. Администратор:',
+      `>> ${mainAdmin}`,
       '⬛ Администрация:',
-      ...admins.map(v => `>> ${v.emoji} ${v.r()};`),
-      '⬛ Модерация:',
-      ...moders.map(v => `>> ${v.emoji} ${v.r()};`)
+      ...admins.map(v => `>> ${v}`),
+      moders.length > 0 && '⬛ Модерация:',
+      ...moders.map(v => `>> ${v}`),
+      '⬛ По вопросам:',
+      '>> [evabottp|EVABOT SUPPORT]'
     ])
   }
 }

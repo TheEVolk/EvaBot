@@ -1,9 +1,16 @@
 import { Keyboard } from 'vk-io'
+import fetch from 'node-fetch'
+import querystring from 'querystring'
+import moment from 'moment'
 
-export default class {
+export default class ChatCommand {
   name = 'беседа'
-  description = 'попасть в офф. конфу'
+  description = 'в конфу'
   emoji = '🎈'
+
+  constructor () {
+    moment.locale('ru')
+  }
 
   async checkFriends (ctx) {
     await ctx.api.friends.add({
@@ -31,9 +38,29 @@ export default class {
       .answer()
   }
 
+  async checkCmBan (henta, userId) {
+    const result = await fetch('https://api.chatmanager.pro?' + querystring.stringify({
+      method: 'chats.isMemberBanned',
+      token: henta.config.private.cmToken,
+      user_id: userId,
+      chat_uid: 'cccAbd'
+    }))
+
+    const resultData = await result.json()
+    return resultData.response.banned && resultData.response.time
+  }
+
   async handler (ctx) {
     if (!await this.checkFriends(ctx)) {
       return this.sendFriendsError(ctx)
+    }
+
+    const banned = await this.checkCmBan(ctx.henta, ctx.user.vkId)
+    if (banned) {
+      return ctx.answer([
+        `⛔ Вы находитесь в бане чата.`,
+        `⏳ Истекает ${moment.unix(banned).fromNow()}.`
+      ])
     }
 
     try {

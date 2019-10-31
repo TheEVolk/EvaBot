@@ -1,5 +1,6 @@
-import initUserMethods from './userMethods'
-import startDataSaver from './dataSaver'
+import createMessageBuilder from './../../bot/src/messageBuilder/creator.js'
+import initUserMethods from './userMethods.js'
+import startDataSaver from './dataSaver.js'
 
 export default class {
   constructor (henta) {
@@ -19,7 +20,56 @@ export default class {
     await startDataSaver(this)
   }
 
+  async processButton (ctx, payload) {
+    const req = Array.from(this.requests).find(v => v.code === payload.code)
+    if (!req) {
+      return
+    }
+
+    if (ctx.user.vkId === req.vkId) {
+      this.triggerAction(ctx, req, payload.action)
+      // await this.processSelf(ctx, req)
+    } else if (req.sourceId && ctx.user.vkId === req.sourceId) {
+      // this.processSource(ctx, req)
+    }
+  }
+
+  async triggerAction (ctx, req, action) {
+    this.requests.delete(req)
+
+    req.payload = req.payload || {}
+    if (req.sourceId) {
+      req.payload.source = await ctx.getPlugin('common/users').get(req.sourceId)
+    }
+
+    if (req.peers[0] !== ctx.peerId) {
+      req.peers.push(ctx.peerId)
+    }
+
+    req.payload.peers = req.payload.peers || req.peers
+
+    req.payload.sendResult = async (data) => {
+      ctx.answered = true
+      const messageBuilder = createMessageBuilder(data)
+      messageBuilder.setContext({ vk: ctx.vk })
+      await messageBuilder.run()
+
+      for (const peerId of req.payload.peers) {
+        messageBuilder.msg['peer_id'] = peerId
+        ctx.api.messages.send(messageBuilder.msg)
+      }
+    }
+
+    return this.tags[req.tag][action](ctx, req.payload)
+  }
+
   async handler (ctx, next) {
+    const payload = ctx.getPayloadValue('req')
+    if (payload) {
+      await this.processButton(ctx, payload)
+      return next()
+    }
+
     const reply = ctx.replyMessage
 
     if (!reply || reply.senderId !== -ctx.henta.groupId) {
@@ -59,12 +109,23 @@ export default class {
 
     req.payload.peers = req.payload.peers || req.peers
 
+    req.payload.sendResult = async (data) => {
+      const messageBuilder = createMessageBuilder(data)
+      messageBuilder.setContext({ vk: ctx.vk })
+      await messageBuilder.run()
+
+      for (const peerId of req.payload.peers) {
+        messageBuilder.context.peerId = peerId
+        messageBuilder.send()
+      }
+    }
+
     switch (ctx.text.toLowerCase()) {
       case '+':
       case '1':
       case 'принять':
       case 'да':
-        await this.tags[req.tag].allow(ctx, req.payload)
+        await this.tags[req.tag].accept(ctx, req.payload)
         break
       case '-':
       case '0':
@@ -77,7 +138,7 @@ export default class {
   }
 
   processSource (ctx, req) {
-    if (ctx.msg.text.toLowerCase() !== 'отмена') {
+    if (ctx.text.toLowerCase() !== 'отмена') {
       return
     }
 
@@ -102,5 +163,9 @@ export default class {
     }
 
     this.tags[tag] = handler
+  }
+
+  unset (tag) {
+    delete this.tags[tag]
   }
 }

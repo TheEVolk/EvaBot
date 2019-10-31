@@ -1,8 +1,8 @@
 [
   "check-mentions",
-  "show-beta-notify",
   "connect-user",
   "write-balance",
+  "autodonat",
   "requests",
   "command",
   "commandNotFound"
