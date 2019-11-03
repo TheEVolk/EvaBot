@@ -9,7 +9,7 @@ class CommitSubcommand {
 
   async handler (ctx) {
     const repo = git(`/home/bots/eva`);
-    await repo.add('./*');
+    await repo.add('.');
     const res = await repo.commit(ctx.params.msg);
     ctx.answer('Изменений: ' + res.summary.changes.toLocaleString('ru'));
   }
@@ -21,7 +21,7 @@ class PushSubcommand {
 
   async handler (ctx) {
     const repo = git(`/home/bots/eva`);
-    const res = await repo.push();
+    const res = await repo.push('origin', 'master');
     console.log(res)
     ctx.answer('Изменений: ');
   }
