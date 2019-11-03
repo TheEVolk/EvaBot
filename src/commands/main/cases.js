@@ -1,48 +1,112 @@
 import { Keyboard } from 'vk-io';
+import moment from 'moment';
+
+function makeButtons (ctx, buttons) {
+  const keyboard = Keyboard.builder();
+  buttons.forEach(v => keyboard.textButton({
+    label: v[0],
+    payload: { command: v[1] },
+    color: v[2] && 'primary'
+  }));
+
+  keyboard.inline(ctx.clientInfo.inline_keyboard === true);
+  keyboard.oneTime();
+
+  return keyboard;
+}
+
+function getItemText (henta, item) {
+  const casesPlugin = henta.getPlugin('bot/cases');
+
+  const texts = {
+    bits: (data) => `${data.count.toLocaleString('ru')} бит`,
+    'case': (data) => casesPlugin.fromSlug[data.caseSlug]
+  };
+
+  return texts[item.slug](item);
+}
 
 class OpenSubcommand {
-  name = 'инфо';
+  name = 'открыть';
   arguments = {
     index: { name: 'индекс', type: 'integer' }
   }
 
   noCaseAnswer (ctx) {
     ctx.builder()
-        .line('📦 Этот кейс не найден.')
-        .keyboard(Keyboard.builder()
-          .textButton({
-            label: 'К кейсам',
-            color: 'primary',
-            payload: {
-              command: 'кейс'
-            }
-          })
-          .inline()
-        )
-        .answer()
+      .line('📦 Этот кейс не найден.')
+      .keyboard(makeButtons(ctx, [
+        ['К кейсам', 'кейс', true]
+      ]))
+      .answer();
+  }
+
+  async giveItem (user, item) {
+    const funcs = {
+      bits: () => {
+        user.money += item.count;
+        user.save();
+      },
+      'case': () => {
+        casesPlugin.Case.create({
+          vkId: ctx.user.vkId,
+          slug: item.caseSlug
+        });
+      }
+    };
+
+    funcs[item.slug]();
+  }
+
+  async openCase (ctx, currentCase) {
+    const redisPlugin = ctx.getPlugin('common/redis');
+    const casesPlugin = ctx.getPlugin('bot/cases');
+
+    redisPlugin.del(`case-open:${ctx.user.vkId}`);
+
+    const item = currentCase.type.items[
+      Math.floor(Math.random() * currentCase.type.items.length)
+    ];
+
+    const text = getItemText(ctx.henta, item);
+
+    await ctx.builder()
+      .text(`✨ Вам выпало: ${text}.`)
+      .attach(casesPlugin.imager.getWin(item.slug, text))
+      .keyboard(makeButtons(ctx, [
+        ['К кейсам', 'кейс', true]
+      ]))
+      .answer();
+
+    this.giveItem(ctx.user, item);
+    currentCase.destroy();
   }
 
   async handler (ctx) {
+    const redisPlugin = ctx.getPlugin('common/redis');
     const casesPlugin = ctx.getPlugin('bot/cases');
+
     const cases = await casesPlugin.getCases(ctx.user.vkId);
-    const currentCase = cases[ctx.params.index];
+    const currentCase = cases[ctx.params.index - 1];
 
     if (!currentCase) {
       return this.noCaseAnswer(ctx);
     }
 
+    const step = +(await redisPlugin.get(`case-open:${ctx.user.vkId}`) || 0) + 1;
+
+    if (step >= 10) {
+      return this.openCase(ctx, currentCase);
+    }
+
+    redisPlugin.set(`case-open:${ctx.user.vkId}`, step);
+
     ctx.builder()
-      .attach(await casesPlugin.imager.get(currentCase.slug))
-      .keyboard(Keyboard.builder()
-        .textButton({
-          label: 'Открыть',
-          color: 'primary',
-          payload: {
-            command: `кейс открыть ${ctx.params.index}`
-          }
-        })
-        .inline()
-      )
+      .text(`🔑 До открытия кейса осталось ${10 - step} нажатий!`)
+      .attach(casesPlugin.imager.getCrack(currentCase.slug, step))
+      .keyboard(makeButtons(ctx, [
+        ['Открывать', `кейс открыть ${ctx.params.index}`, true]
+      ]))
       .answer()
   }
 }
@@ -56,40 +120,71 @@ class InfoSubcommand {
   noCaseAnswer (ctx) {
     ctx.builder()
         .line('📦 Этот кейс не найден.')
-        .keyboard(Keyboard.builder()
-          .textButton({
-            label: 'К кейсам',
-            color: 'primary',
-            payload: {
-              command: 'кейс'
-            }
-          })
-          .inline()
-        )
+        .keyboard(makeButtons(ctx, [
+          ['К кейсам', 'кейс', true]
+        ]))
         .answer()
   }
 
   async handler (ctx) {
     const casesPlugin = ctx.getPlugin('bot/cases');
     const cases = await casesPlugin.getCases(ctx.user.vkId);
-    const currentCase = cases[ctx.params.index];
+    const currentCase = cases[ctx.params.index - 1];
 
     if (!currentCase) {
       return this.noCaseAnswer(ctx);
     }
 
     ctx.builder()
-      .attach(await casesPlugin.imager.get(currentCase.slug))
-      .keyboard(Keyboard.builder()
-        .textButton({
-          label: 'Открыть',
-          color: 'primary',
-          payload: {
-            command: `кейс открыть ${ctx.params.index}`
-          }
-        })
-        .inline()
-      )
+      .attach(casesPlugin.imager.get(currentCase.slug))
+      .keyboard(makeButtons(ctx, [
+        ['Открыть', `кейс открыть ${ctx.params.index}`, true]
+      ]))
+      .answer()
+  }
+}
+
+class BonusSubcommand {
+  name = 'бонус';
+
+  constructor () {
+    moment.locale('ru');
+  }
+
+  timeOutAnswer (ctx, lastAttempt) {
+    ctx.builder()
+      .text(`⌛ Бонус будет доступен ${moment.unix(lastAttempt / 1000 + 86400).fromNow()}.`)
+      .keyboard(makeButtons(ctx, [
+        ['К кейсам', 'кейс', true]
+      ]))
+      .answer()
+  }
+
+  async handler (ctx) {
+    const redisPlugin = ctx.getPlugin('common/redis');
+    const casesPlugin = ctx.getPlugin('bot/cases');
+
+    const lastAttempt = await redisPlugin.get(`cases:${ctx.user.vkId}`) || 0;
+
+    if (Date.now() - lastAttempt < 86400 * 1000) {
+      return this.timeOutAnswer(ctx, lastAttempt);
+    }
+
+    redisPlugin.set(`cases:${ctx.user.vkId}`, Date.now());
+
+    const isWin = true;// Math.random() > 0.5;
+    if (isWin) {
+      casesPlugin.Case.create({
+        vkId: ctx.user.vkId,
+        slug: 'hube'
+      });
+    }
+
+    ctx.builder()
+      .text(isWin ? '🎉 Вам повезло! Бомж кейс ваш!' : '🤷‍ Увы, сегодня вы без кейса. Может повезёт в другой раз.')
+      .keyboard(makeButtons(ctx, [
+        ['К кейсам', 'кейс', true]
+      ]))
       .answer()
   }
 }
@@ -98,7 +193,11 @@ export default class CasesCommand {
   name = 'кейс';
   description = 'открытие призов';
   emoji = '📦';
-  private = true;
+  subcommands = [
+    new BonusSubcommand(),
+    new InfoSubcommand(),
+    new OpenSubcommand()
+  ];
 
   async handler (ctx) {
     const casesPlugin = ctx.getPlugin('bot/cases');
@@ -107,24 +206,46 @@ export default class CasesCommand {
     if (!cases) {
       return this.noCasesAnswer(ctx);
     }
+
+    const keyboard = Keyboard.builder()
+      .inline(ctx.clientInfo.inline_keyboard === true)
+      .oneTime();
+
+    cases.forEach((v, i) => {
+      if (i > 9) {
+        return;
+      }
+
+      keyboard.textButton({
+        label: i + 1,
+        payload: {
+          command: `кейс инфо ${i + 1}`
+        }
+      });
+
+      if (i%3 === 0) {
+        keyboard.row();
+      }
+    });
+
+    if (cases.length <= 3) {
+      keyboard.textButton({
+        label: 'Бесплатный кейс',
+        color: 'primary',
+        payload: {
+          command: 'кейс бонус'
+        }
+      });
+    }
     
     ctx.builder()
-      .lines(
+      .lines([
         '📦 Ваши кейсы:',
-        ...cases.map((v, i) => `${i+1} >> ${v.title}.`),
+        ...cases.map((v, i) => `${i+1} >> ${v.type.title}.`),
         cases.length === 0 && '>> У вас нет кейсов.',
-        '🔢 Введите номер кейса, который вы хотите посмотреть.'
-      )
-      .keyboard(Keyboard.builder()
-          .textButton({
-            label: 'Бесплатный кейс',
-            color: 'primary',
-            payload: {
-              command: 'кейс бонус'
-            }
-          })
-          .inline()
-        )
-        .answer()      
+        '\n💡 Введите `кейс инфо <индекс>`, чтобы просмотреть кейс'
+      ])
+      .keyboard(keyboard)
+      .answer();    
   }
 }

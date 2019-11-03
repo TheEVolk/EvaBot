@@ -40,7 +40,8 @@ class OtherSubcommand {
         .row()
         .textButton({ label: `Поддержка`, payload: { command: 'меню поддержка' } })
         .textButton({ label: `Донат`, color: 'primary', payload: { command: 'донат' } })
-        .inline()
+        .inline(ctx.clientInfo.inline_keyboard === true)
+        .oneTime()
       )
       .answer({ mainMenu: false })
   }
@@ -57,8 +58,6 @@ export default class MenuCommand {
   ]
 
   async handler (ctx) {
-    console.log(ctx.clientInfo.inline_keyboard)
-
     ctx.builder()
       .lines([
         `Баланс: ${ctx.user.money.toLocaleString('ru')} бит.`

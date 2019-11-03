@@ -22,5 +22,6 @@
     "bot/repostBonus",
     "bot/autodonat",
     "bot/gameSeeds",
-    "bot/rating"
+    "bot/rating",
+    "bot/cases"
 ]
