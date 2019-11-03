@@ -9,10 +9,10 @@ class CommitSubcommand {
 
   async handler (ctx) {
     const repo = git(`/home/bots/eva`);
-    await repo.add('.');
-    const res = await repo.commit(ctx.params.msg);
+    const res = await repo.add('.');
+    const res2 = await repo.commit(ctx.params.msg);
     console.log(res)
-    ctx.answer('Изменений: ' + res.summary.changes.toLocaleString('ru'));
+    ctx.answer('Изменений: ' + res2.summary.changes.toLocaleString('ru'));
   }
 }
 
