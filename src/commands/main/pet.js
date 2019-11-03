@@ -68,7 +68,7 @@ export default class PetCommand {
       ])
       .keyboard(Keyboard.builder()
         .textButton({ label: `Прочее`, payload: { command: 'пит прочее' } })
-        .oneTime()
+        .inline()
       )
       .answer()
   }

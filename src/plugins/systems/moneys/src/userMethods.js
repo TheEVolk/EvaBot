@@ -11,6 +11,6 @@ export default function initUsersMethods (plugin) {
 
   usersPlugin.group('moneys')
     .method('getBrief', (self) => plugin.briefNumber(self.money))
-    .method('getLocaled', (self) => self.money.getLocaleString('ru'))
+    .method('getLocaled', (self) => self.money.toLocaleString('ru'))
     .end()
 }

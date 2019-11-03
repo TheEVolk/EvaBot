@@ -59,6 +59,10 @@ export default class {
   }
 
   async handler (ctx) {
+    if (ctx.params.target.money < ctx.params.rate) {
+      return ctx.answer(`⛔ У оппонента недостаточно бит.`)
+    }
+
     const rateStr = ctx.params.rate.toLocaleString('ru')
     const { tip } = ctx.params.target.req.new({
       tag: 'games:coinflip',

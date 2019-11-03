@@ -15,18 +15,18 @@ export default class SetRoleCommand {
       return ctx.answer('⛔ Такой роли не существует.')
     }
 
-    const oldRoleName = ctx.params.target.pex.get().name
+    const oldRoleName = ctx.params.target.pex.get().title
     ctx.params.target.role = newRoleSlug
     ctx.params.target.save()
 
     ctx.params.target.send([
       `🎫 ${ctx.user} изменил вашу роль:`,
-      `⬛ ${oldRoleName} » ${newRole.name}.`
+      `⬛ ${oldRoleName} » ${newRole.title}.`
     ])
 
     ctx.answer([
       `🎫 Новая роль для ${ctx.params.target}:`,
-      `⬛ ${oldRoleName} » ${newRole.name}.`
+      `⬛ ${oldRoleName} » ${newRole.title}.`
     ])
   }
 }

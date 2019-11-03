@@ -52,7 +52,7 @@ export default class BotCmdPlugin {
       return next()
     }
 
-    ctx.args = commandLine.split(' ').filter(v => v !== '')
+    ctx.args = commandLine.split(' ').filter(v => v !== 'i')
     const commandName = ctx.args[0]
 
     const command = this.get(commandName)
@@ -67,7 +67,12 @@ export default class BotCmdPlugin {
     }
 
     if (currentCommand.arguments) {
-      const [error, res] = await this.argumentParser.parse(ctx, currentCommand.arguments, 0)
+      const [error, res] = await this.argumentParser.parse(
+        ctx,
+        currentCommand.arguments,
+        command === currentCommand ? 0 : 1
+      );
+
       if (error) {
         ctx.answer(res)
         return next()

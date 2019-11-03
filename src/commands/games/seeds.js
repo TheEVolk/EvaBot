@@ -49,7 +49,7 @@ class PeckSubcommand {
         `➕ Вы щелкнули семечку.`,
         `🌻 Всего: ${stat.toLocaleString('ru')} сем.`,
         `\n🔼 Вы №${myPos} в топе!`,
-        `💡 ${next.count - stat} до повышения.`
+        next && `💡 ${next.count - stat} до повышения.`
       ])
       .keyboard(Keyboard.builder()
         .textButton({ label: 'Щёлк!', color: 'positive', payload: { command: 'семечки щелкать' } })

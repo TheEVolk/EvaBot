@@ -21,5 +21,6 @@
     "bot/helloChat",
     "bot/repostBonus",
     "bot/autodonat",
-    "bot/gameSeeds"
+    "bot/gameSeeds",
+    "bot/rating"
 ]

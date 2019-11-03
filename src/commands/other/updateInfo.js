@@ -8,7 +8,7 @@ export default class {
 
   async handler (ctx) {
     const versions = await ctx.henta.util.loadSettings('updates.json')
-    const version = ctx.params.version || require(`${ctx.henta.botdir}/package.json`).version
+    const version = ctx.params.version || (await ctx.henta.util.loadSettings(`../package.json`)).version
     const updatePost = versions[version]
     if (!updatePost) {
       return ctx.answer(`Данная версия не найдена.`)

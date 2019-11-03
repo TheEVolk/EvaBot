@@ -47,6 +47,7 @@ export default class ChatCommand {
     }))
 
     const resultData = await result.json()
+    console.log({ resultData })
     return resultData.response.banned && resultData.response.time
   }
 

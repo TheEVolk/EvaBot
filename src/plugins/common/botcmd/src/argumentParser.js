@@ -5,7 +5,8 @@ export default class ArgumentParser {
     Object.assign(this, {
       henta,
       botcmd,
-      types: {}
+      types: {},
+      allowNullTypes: new Set()
     })
   }
 
@@ -18,7 +19,12 @@ export default class ArgumentParser {
       throw Error(`Тип '${slug}' уже существует.`)
     }
 
-    this.types[slug] = handler
+    this.types[slug] = handler;
+    return this;
+  }
+
+  allowNull (slug) {
+    this.allowNullTypes.add(slug)
   }
 
   getFunction (slug) {
@@ -31,16 +37,22 @@ export default class ArgumentParser {
   }
 
   async parse (ctx, argList, offset) {
-    if (Object.values(argList).filter(v => !v.optional).length > ctx.args.length - 1 - offset) {
-      return [true, '⚪ Недостаточно аргументов.']// 'error:commandUse']
-    }
-
-    let index = offset
+    let index = 0
     const params = new Map()
     for (const [name, argument] of Object.entries(argList)) {
       // Optional arguments
-      if (ctx.args.length <= index) {
-        break
+      // console.log(ctx.args, index)
+      if (ctx.args.length - 1 - offset <= index) {
+        if (!this.allowNullTypes.has(argument.type)){
+          if (argument.optional) {
+            break
+          } else {
+            return [true, [
+              '⚪ Используйте:',
+              `>> ${Object.values(argList).map(v => v.optional ? `[${v.name}]` : `<${v.name}>`).join(' ')}`
+            ]]
+          }
+        }
       }
 
       const func = this.getFunction(argument.type)
@@ -48,11 +60,15 @@ export default class ArgumentParser {
         ctx,
         index,
         argument,
-        word: ctx.args[index + 1],
+        word: ctx.args[index + 1 + offset],
         setIndex: (newIndex) => { index = newIndex }
       })
 
       if (error) {
+        if (ctx.args.length - 1 - offset <= index) {
+          break;
+        }
+
         return [error, result]
       }
 
