@@ -11,7 +11,7 @@ class CommitSubcommand {
     const repo = git(`/home/bots/eva`);
     await repo.add('.');
     await repo.commit(ctx.params.msg);
-    ctx.answer('OK');
+    ctx.answer('Success.');
   }
 }
 
@@ -20,9 +20,10 @@ class PushSubcommand {
   right = 'git';
 
   async handler (ctx) {
+    ctx.send('Pushing...');
     const repo = git(`/home/bots/eva`);
     await repo.push('origin', 'master');
-    ctx.answer('SUCCESS');
+    ctx.answer('Success.');
   }
 }
 
