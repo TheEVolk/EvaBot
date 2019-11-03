@@ -11,8 +11,19 @@ class CommitSubcommand {
     const repo = git(`/home/bots/eva`);
     await repo.add('./*');
     const res = await repo.commit(ctx.params.msg);
+    ctx.answer('Изменений: ' + res.summary.changes.toLocaleString('ru'));
+  }
+}
+
+class PushSubcommand {
+  name = 'push';
+  right = 'git';
+
+  async handler (ctx) {
+    const repo = git(`/home/bots/eva`);
+    const res = await repo.push();
     console.log(res)
-    ctx.answer('OK');
+    ctx.answer('Изменений: ');
   }
 }
 
@@ -21,7 +32,8 @@ export default class GitCommand {
   description = 'github';
   right = 'git';
   subcommands = [
-    new CommitSubcommand()
+    new CommitSubcommand(),
+    new PushSubcommand()
   ];
 
   handler (ctx) {

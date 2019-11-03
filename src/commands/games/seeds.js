@@ -22,7 +22,8 @@ class TopSubcommand {
       ])
       .keyboard(Keyboard.builder()
         .textButton({ label: `Семечки`, payload: { command: 'семечки' } })
-        .inline()
+        .inline(ctx.clientInfo.inline_keyboard === true)
+        .oneTime()
       )
       .answer()
   }
@@ -109,7 +110,8 @@ export default class SeedsCommand {
         .textButton({ label: 'Топ', payload: { command: 'семечки топ' } })
         .row()
         .textButton({ label: 'Убираться', payload: { command: 'семечки убираться' } })
-        .inline()
+        .inline(ctx.clientInfo.inline_keyboard === true)
+        .oneTime()
       )
       .answer();
   }
@@ -134,7 +136,8 @@ export default class SeedsCommand {
         .textButton({ label: 'Топ', payload: { command: 'семечки топ' } })
         .row()
         .textButton({ label: 'Убираться', payload: { command: 'семечки убираться' } })
-        .inline()
+        .inline(ctx.clientInfo.inline_keyboard === true)
+        .oneTime()
       )
       .answer();
   }

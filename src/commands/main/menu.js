@@ -57,11 +57,7 @@ export default class MenuCommand {
   ]
 
   async handler (ctx) {
-    // const pet = await ctx.user.getPet()
-
-    // const clanEmoji = await ctx.user.hasClan() ? '🛡' : '⭕'
-    const jobEmoji = await ctx.user.job ? '💼' : '⭕'
-    // const petEmoji = pet ? pet.getType().emoji : '⭕'
+    console.log(ctx.clientInfo.inline_keyboard)
 
     ctx.builder()
       .lines([
@@ -77,7 +73,8 @@ export default class MenuCommand {
         .textButton({ label: `Прочее`, payload: { command: 'меню прочее' } })
         .row()
         .textButton({ label: '🆕 Семечки', color: 'primary', payload: { command: 'семечки' } })
-        .inline()
+        .inline(ctx.clientInfo.inline_keyboard === true)
+        .oneTime()
         // .textButton({ label: `${petEmoji} Питомец`, payload: { command: 'пит' } })
         // .textButton({ label: `${jobEmoji} Работа`, payload: { command: 'работа' } })
         // .row()
