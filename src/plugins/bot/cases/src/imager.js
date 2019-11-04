@@ -9,7 +9,7 @@ export default class CasesImager {
   async get (slug) {
     const imageCachePlugin = this.plugin.henta.getPlugin('common/imageCache');
     return imageCachePlugin.get(
-      `cases:${slug}`,
+      `cases:image:${slug}`,
       () => this.generate(slug)
     );
   }
@@ -44,7 +44,14 @@ export default class CasesImager {
 
     context.textAlign = 'center';
     context.fillStyle = 'rgb(250, 250, 250)';
-    context.font = `100px Cleanwork`;
+
+    let size = 100;
+    context.font = `${size}px Cleanwork`;
+
+    while (context.measureText(this.plugin.fromSlug[slug].title).width > 620) {
+      size--;
+      context.font = `${size}px Cleanwork`;
+    }
 
     context.fillText(this.plugin.fromSlug[slug].title, 525, 610);
 

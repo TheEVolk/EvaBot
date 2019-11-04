@@ -20,7 +20,8 @@ function getItemText (henta, item) {
 
   const texts = {
     bits: (data) => `${data.count.toLocaleString('ru')} бит`,
-    'case': (data) => casesPlugin.fromSlug[data.caseSlug]
+    score: (data) => `${data.count.toLocaleString('ru')} ед. опыта`,
+    'case': (data) => casesPlugin.fromSlug[data.caseSlug].title
   };
 
   return texts[item.slug](item);
@@ -41,15 +42,21 @@ class OpenSubcommand {
       .answer();
   }
 
-  async giveItem (user, item) {
+  async giveItem (ctx, user, item) {
+    const casesPlugin = ctx.getPlugin('bot/cases');
+
     const funcs = {
       bits: () => {
         user.money += item.count;
         user.save();
       },
+      score: () => {
+        user.lvl.addScore(item.count);
+        user.save();
+      },
       'case': () => {
         casesPlugin.Case.create({
-          vkId: ctx.user.vkId,
+          vkId: user.vkId,
           slug: item.caseSlug
         });
       }
@@ -78,7 +85,7 @@ class OpenSubcommand {
       ]))
       .answer();
 
-    this.giveItem(ctx.user, item);
+    this.giveItem(ctx, ctx.user, item);
     currentCase.destroy();
   }
 
@@ -144,6 +151,41 @@ class InfoSubcommand {
   }
 }
 
+class ItemsSubcommand {
+  name = 'вещи';
+  arguments = {
+    slug: { name: 'кейс-slug', type: 'word' }
+  }
+
+  noCaseAnswer (ctx) {
+    ctx.builder()
+        .line('📦 Этот кейс не найден.')
+        .keyboard(makeButtons(ctx, [
+          ['К кейсам', 'кейс', true]
+        ]))
+        .answer()
+  }
+
+  async handler (ctx) {
+    const casesPlugin = ctx.getPlugin('bot/cases');
+    const currentCaseType = casesPlugin.fromSlug[ctx.params.slug];
+
+    console.log(ctx.params.slug)
+
+    if (!currentCaseType) {
+      return this.noCaseAnswer(ctx);
+    }
+
+    ctx.builder()
+      .lines([
+        `📦 Предметы:`,
+        ...currentCaseType.items.map(v => `🔹 ${getItemText(ctx.henta, v)}`)
+      ])
+      .attach(casesPlugin.imager.get(ctx.params.slug))
+      .answer()
+  }
+}
+
 class BonusSubcommand {
   name = 'бонус';
 
@@ -196,7 +238,8 @@ export default class CasesCommand {
   subcommands = [
     new BonusSubcommand(),
     new InfoSubcommand(),
-    new OpenSubcommand()
+    new OpenSubcommand(),
+    new ItemsSubcommand()
   ];
 
   async handler (ctx) {
@@ -223,7 +266,7 @@ export default class CasesCommand {
         }
       });
 
-      if (i%3 === 0) {
+      if ((i+1)%3 === 0) {
         keyboard.row();
       }
     });

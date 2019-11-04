@@ -27,17 +27,17 @@ export default class AutodonatPlugin {
     const app = nanoexpress()
 
     app.post('/', (req, res) => {
-      const data = JSON.parse(req.body)
+      const data = JSON.parse(req.body);
 
       if (data.payment.comment.startsWith('ed_')) {
-        henta.log(`Обработка ${data.payment.comment}`)
-        this.processLine(data.payment.comment, data.payment.sum.amount, data.payment.txnId, 'qiwi')
+        henta.log(`Обработка ${data.payment.comment}`);
+        this.processLine(data.payment.comment, data.payment.sum.amount, data.payment.txnId, 'qiwi');
       }
 
-      res.send('OK')
+      res.send('OK');
     })
 
-    app.listen(3453)
+    app.listen(3453);
   }
 
   async processLine (line, count, uuid, source) {
@@ -100,6 +100,16 @@ export default class AutodonatPlugin {
         user.money += 50 * 1e6
         user.send("🛎 Вам повезло! Бонус 50 000 000 бит!")
       }
+    }
+
+    if (market.type === 'case') {
+      const casesPlugin = this.henta.getPlugin('bot/cases');
+      casesPlugin.Case.create({
+        vkId: user.vkId,
+        slug: market.slug
+      });
+
+      user.send(`📦 Автодонат >> ${casesPlugin.fromSlug[market.slug].title}!`);
     }
   }
 

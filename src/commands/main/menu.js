@@ -71,7 +71,7 @@ export default class MenuCommand {
         // .textButton({ label: `Донат`, payload: { command: 'донат' } })
         .textButton({ label: `Прочее`, payload: { command: 'меню прочее' } })
         .row()
-        .textButton({ label: '🆕 Семечки', color: 'primary', payload: { command: 'семечки' } })
+        .textButton({ label: '🆕 Кейсы', color: 'primary', payload: { command: 'кейс' } })
         .inline(ctx.clientInfo.inline_keyboard === true)
         .oneTime()
         // .textButton({ label: `${petEmoji} Питомец`, payload: { command: 'пит' } })
