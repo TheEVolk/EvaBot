@@ -12,7 +12,7 @@
     "options": {
       "host": "localhost",
       "dialect": "postgres",
-      "logging": false,
+      "logging": true,
       "client_encoding": "UTF8",
       "charset": "utf8mb4",
       "pool": {

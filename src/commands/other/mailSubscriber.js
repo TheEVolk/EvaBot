@@ -1,51 +1,33 @@
-export default class {
-  constructor () {
-    Object.assign(this, {
-      name: 'рассылка',
-      description: 'управление подпиской на рассылку',
-      emoji: '📣',
+import { Keyboard } from 'vk-io';
 
-      /* subcommands: {
-        сменить: {
-          handler: this.changeHandler,
-          arguments: { slug: { type: 'string' } }
-        }
-      } */
-    })
-  }
+function makeButtons (ctx, buttons) {
+  const keyboard = Keyboard.builder();
+  buttons.forEach(v => keyboard.textButton({
+    label: v[0],
+    payload: { command: v[1] },
+    color: v[2] && 'primary'
+  }));
+
+  keyboard.inline(ctx.clientInfo.inline_keyboard === true);
+  keyboard.oneTime();
+
+  return keyboard;
+}
+
+class ChangeSubcommand {
+  name = 'сменить';
+  arguments = {
+    slug: { name: 'тип', type: 'word' }
+  };
 
   async handler (ctx) {
-    const { categories } = ctx.getPlugin('common/allmail')
-    const subscribes = await ctx.user.allmain.getSubscribes()
+    const { categories } = ctx.getPlugin('common/allmail');
+    // const { briefNumber } = ctx.getPlugin('mybot/moneys');
 
-    const keyboard = ctx.keyboard()
-    categories.forEach(v =>
-      keyboard.textButton({
-        label: `${v.emoji} ${v.title}`,
-        color: subscribes.includes(v.slug) ? 'positive' : 'negative',
-        payload: { botcmd: `рассылка сменить ${v.slug}` }
-      }).row()
-    )
-
-    ctx.builder()
-      .lines([
-        '✉ Категории рассылки:',
-        ...categories.map(v =>
-          `[${subscribes.includes(v.slug) ? '✔' : '❌'}] ${v.title}'.`
-        )
-      ])
-      .keyboard(keyboard)
-      .answer()
-  }
-
-  async changeHandler (ctx) {
-    const { categories } = ctx.getPlugin('common/allmail')
-    const { briefNumber } = ctx.getPlugin('mybot/moneys')
-
-    const category = ctx.assert(
-      categories.find(v => v.slug === ctx.params.slug),
-      '📛 Такая подписка не существует.'
-    )
+    const category = categories.find(v => v.slug === ctx.params.slug);
+    if (!category) {
+      return ctx.answer('📛 Такая подписка не существует.');
+    }
 
     const isSubscribed = await ctx.user.allmain.is(category.slug)
 
@@ -54,7 +36,9 @@ export default class {
 
       ctx.builder()
         .text(`💔 Вы отписались от <<${category.title}>>`)
-        .textButton({ label: 'Назад', payload: { botcmd: 'рассылка' } })
+        .keyboard(makeButtons(ctx, [
+          ['Назад', 'рассылка', true]
+        ]))
         .answer()
     } else {
       ctx.user.allmain.subscribe(category.slug)
@@ -62,10 +46,44 @@ export default class {
       ctx.builder()
         .lines([
           `${category.emoji} Вы подписались на <<${category.title}>>`,
-          `💸 За каждое полученное сообщение вы будете получать ${briefNumber(category.bonus)} бит!`
+          // `💸 За каждое полученное сообщение вы будете получать ${briefNumber(category.bonus)} бит!`
         ])
-        .textButton({ label: 'Назад', payload: { botcmd: 'рассылка' } })
+        .keyboard(makeButtons(ctx, [
+          ['Назад', 'рассылка', true]
+        ]))
         .answer()
     }
+  }
+}
+
+export default class MailSumscriberCommand {
+  name = 'рассылка';
+  description = 'управление рассылкой';
+  emoji = '📣';
+  subcommands = [
+    new ChangeSubcommand()
+  ];
+
+  async handler (ctx) {
+    const { categories } = ctx.getPlugin('common/allmail')
+    const subscribes = await ctx.user.allmain.getSubscribes()
+    console.log(subscribes)
+
+    const keyboard = Keyboard.builder()
+      .inline(ctx.clientInfo.inline_keyboard === true)
+      .oneTime();
+
+    categories.forEach(v =>
+      keyboard.textButton({
+        label: `${v.title}`,
+        color: subscribes.includes(v.slug) ? 'positive' : 'negative',
+        payload: { command: `рассылка сменить ${v.slug}` }
+      }).row()
+    )
+
+    ctx.builder()
+      .text('✉ Категории рассылок:')
+      .keyboard(keyboard)
+      .answer();
   }
 }

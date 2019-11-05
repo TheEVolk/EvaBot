@@ -16,14 +16,16 @@ export default class PostGamePlugin {
       answered: Sequelize.TEXT(),
       rightAnswer: Sequelize.STRING(),
       createTime: Sequelize.INTEGER(),
-      bonus: Sequelize.INTEGER()
+      bonusData: Sequelize.TEXT()
     }, { timestamps: false })
 
-    await this.PostGameProcess.sync()
+    await dbPlugin.safeSync(this.PostGameProcess)
+
+    // await this.PostGameProcess.sync({ force: true })
 
     henta.vk.updates.on('comment', this.processUserAnswer.bind(this))
   }
-
+m
   async start (henta) {
     // this.createGame(ProstranstvoGame)
     // this.debugGame(ProstranstvoGame)
@@ -61,13 +63,26 @@ export default class PostGamePlugin {
 
     if (ctx.text.toLowerCase().replace('ё', 'е') === gameProcess.rightAnswer) {
       const { diffLine } = this.henta.getPlugin('systems/moneys')
-      user.money += gameProcess.bonus
+
+      const bonus = JSON.parse(gameProcess.bonusData);
+      if (bonus.type === 'bits') {
+        user.money += bonus.count;
+      }
+
+      if (bonus.type === 'case') {
+        const casesPlugin = this.henta.getPlugin('bot/cases');
+        casesPlugin.Case.create({
+          vkId: user.vkId,
+          slug: bonus.slug
+        });
+      }
+
       user.lvl.addScore(100)
       user.save()
 
       user.send([
         '✔ Ты правильно ответил в игре и получил приз!',
-        diffLine(user, gameProcess.bonus)
+        // diffLine(user, gameProcess.bonus)
       ])
 
       answered[user.vkId] = 'W'
@@ -98,9 +113,8 @@ export default class PostGamePlugin {
     })
   }
 
-  async createGame (GameClass) {
+  async createGame (GameClass, bonusType, custom) {
     const currentGame = new GameClass()
-    const bonus = 10000 + Math.floor(Math.random() * 1e6)
 
     const uploader = new Vk({
       token: this.henta.config.private.pageToken
@@ -110,9 +124,22 @@ export default class PostGamePlugin {
       source: await currentGame.generateImage()
     })
 
+    let text = ``;
+    let bonusData = { type: bonusType };
+    if (bonusType === 'bits') {  
+      bonusData['count'] = 10000 + Math.floor(Math.random() * 1e6);
+      text = `💰 Напиши ответ в комментарии и получи ${bonus.toLocaleString()} бит!`;
+    }
+
+    if (bonusType === 'case') {  
+      const casesPlugin = this.henta.getPlugin('bot/cases');
+      bonusData['slug'] = custom;
+      text = `📦 Напиши ответ в комментарии и получи ${casesPlugin.fromSlug[custom].title}!`;
+    }
+
     const wallId = await uploader.api.wall.post({
       owner_id: -134466548,
-      message: `💰 Напиши ответ в комментарии и получи ${bonus.toLocaleString()} бит!\n\n#game@bot_eva`,
+      message: text + `\n\n#game@bot_eva`,
       attachment: photo.toString()
     })
 
@@ -127,8 +154,8 @@ export default class PostGamePlugin {
       answered: '{}',
       rightAnswer: currentGame.rightAnswer,
       createTime: Math.floor(Date.now() / 1000),
-      bonus: bonus
-    })
+      bonusData: JSON.stringify(bonusData)
+    });
 
     // Debug
     /* const usersPlugin = this.henta.getPlugin('common/users')

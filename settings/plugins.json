@@ -10,6 +10,7 @@
     "common/redis",
     "common/imageCache",
     "common/onlineStatus",
+    "common/allmail",
     "systems/moneys",
     "systems/achievements",
     "systems/lvl",
