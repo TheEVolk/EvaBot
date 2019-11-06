@@ -24,5 +24,6 @@
     "bot/autodonat",
     "bot/gameSeeds",
     "bot/rating",
+    "bot/bank",
     "bot/cases"
 ]

@@ -5,7 +5,7 @@
         "node": true
     },
     "extends": [
-        "eslint-config-airbnb"
+        "airbnb-base"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -16,6 +16,11 @@
         "sourceType": "module"
     },
     "rules": {
+        "comma-dangle": ["error", "never"],
+        "arrow-parens": ["error", "as-needed"],
+        "consistent-return": 0,
+        "class-methods-use-this": 0,
+        "max-classes-per-file": 0,
         "no-useless-computed-key": 0,
         "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }]
     }

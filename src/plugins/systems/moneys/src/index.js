@@ -1,5 +1,5 @@
-import initBotcmdType from './botcmdType'
-import initUserMethods from './userMethods'
+import initBotcmdType from './botcmdType.js'
+import initUserMethods from './userMethods.js'
 
 export default class {
   constructor (henta) {

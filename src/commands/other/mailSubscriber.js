@@ -1,6 +1,6 @@
 import { Keyboard } from 'vk-io';
 
-function makeButtons (ctx, buttons) {
+function makeButtons(ctx, buttons) {
   const keyboard = Keyboard.builder();
   buttons.forEach(v => keyboard.textButton({
     label: v[0],
@@ -20,38 +20,38 @@ class ChangeSubcommand {
     slug: { name: 'тип', type: 'word' }
   };
 
-  async handler (ctx) {
-    const { categories } = ctx.getPlugin('common/allmail');
+  async handler(ctx) {
+    const allmailPlugin = ctx.getPlugin('common/allmail');
     // const { briefNumber } = ctx.getPlugin('mybot/moneys');
 
-    const category = categories.find(v => v.slug === ctx.params.slug);
+    const category = allmailPlugin.categories.find(v => v.slug === ctx.params.slug);
     if (!category) {
       return ctx.answer('📛 Такая подписка не существует.');
     }
 
-    const isSubscribed = await ctx.user.allmain.is(category.slug)
+    const isSubscribed = await allmailPlugin.is(ctx.peerId, category.slug);
 
     if (isSubscribed) {
-      ctx.user.allmain.unsubscribe(category.slug)
+      allmailPlugin.unsubscribe(ctx.peerId, category.slug);
 
       ctx.builder()
         .text(`💔 Вы отписались от <<${category.title}>>`)
         .keyboard(makeButtons(ctx, [
           ['Назад', 'рассылка', true]
         ]))
-        .answer()
+        .answer();
     } else {
-      ctx.user.allmain.subscribe(category.slug)
+      allmailPlugin.subscribe(ctx.peerId, category.slug);
 
       ctx.builder()
         .lines([
           `${category.emoji} Вы подписались на <<${category.title}>>`,
-          // `💸 За каждое полученное сообщение вы будете получать ${briefNumber(category.bonus)} бит!`
+          !ctx.isChat && `💸 За каждое полученное сообщение вы будете получать ${category.bonus.toLocaleString('ru')} яриков!`
         ])
         .keyboard(makeButtons(ctx, [
           ['Назад', 'рассылка', true]
         ]))
-        .answer()
+        .answer();
     }
   }
 }
@@ -64,26 +64,21 @@ export default class MailSumscriberCommand {
     new ChangeSubcommand()
   ];
 
-  async handler (ctx) {
-    const { categories } = ctx.getPlugin('common/allmail')
-    const subscribes = await ctx.user.allmain.getSubscribes()
-    console.log(subscribes)
+  async handler(ctx) {
+    const allmailPlugin = ctx.getPlugin('common/allmail');
+    const subscribes = await allmailPlugin.getSubscribes(ctx.peerId);
 
-    const keyboard = Keyboard.builder()
-      .inline(ctx.clientInfo.inline_keyboard === true)
-      .oneTime();
+    const keyboard = Keyboard.builder();
 
-    categories.forEach(v =>
-      keyboard.textButton({
-        label: `${v.title}`,
-        color: subscribes.includes(v.slug) ? 'positive' : 'negative',
-        payload: { command: `рассылка сменить ${v.slug}` }
-      }).row()
-    )
+    allmailPlugin.categories.forEach(v => keyboard.textButton({
+      label: `${v.title}`,
+      color: subscribes.includes(v.slug) ? 'positive' : 'negative',
+      payload: { command: `рассылка сменить ${v.slug}` }
+    }).row());
 
     ctx.builder()
-      .text('✉ Категории рассылок:')
-      .keyboard(keyboard)
+      .text(ctx.isChat ? '✉ Подписки чата:' : '✉ Ваши подписки:')
+      .keyboard(keyboard.inline(ctx.clientInfo.inline_keyboard === true).oneTime())
       .answer();
   }
 }

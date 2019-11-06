@@ -1,6 +1,6 @@
-import MessageProcessor from './messageProcessor'
+import MessageProcessor from './messageProcessor.js'
 
-export default class {
+export default class BotPlugin {
   constructor (henta) {
     Object.assign(this, {
       henta,

@@ -1,5 +1,5 @@
-import { Op } from 'sequelize'
-import { Keyboard } from 'vk-io'
+import { Op } from 'sequelize';
+import { Keyboard } from 'vk-io';
 
 class TopsSubcommand {
   name = 'топ'
@@ -7,36 +7,66 @@ class TopsSubcommand {
     target: { name: 'игрок', type: 'user', optional: true }
   }
 
-  async handler (ctx) {
+  async handler(ctx) {
     const { User } = ctx.getPlugin('common/users');
     const { Pet } = ctx.getPlugin('systems/pets');
     const { SeedsStat, getStat } = ctx.getPlugin('bot/gameSeeds');
 
     const target = ctx.params.target || ctx.user;
 
-    const pet = await target.pets.get();
-    const seedsStat = await getStat(target.vkId);
-  
-    const balance = await User.count({ where: { money: { [Op.gte]: target.money } } });
-    const petPos = pet && await Pet.count({ where: { rating: { [Op.gte]: pet.rating } } });
-    const seedsPos = seedsStat && await SeedsStat.count({ where: { count: { [Op.gte]: seedsStat } } });
+    const [pet, seedsStat] = await Promise.all([
+      target.pets.get(),
+      getStat(target.vkId)
+    ]);
 
-    const counts = await Promise.all([
+    const [
+      balancePos,
+      petPos,
+      seedsPos,
+      levelPos
+    ] = await Promise.all([
+      User.count({ where: { money: { [Op.gte]: target.money } } }),
+      pet && Pet.count({ where: { rating: { [Op.gte]: pet.rating } } }),
+      seedsStat && SeedsStat.count({ where: { count: { [Op.gte]: seedsStat } } }),
+      User.count({
+        where: {
+          [Op.or]: [
+            { level: { [Op.gt]: ctx.user.level } },
+            { level: ctx.user.level, score: { [Op.gt]: ctx.user.score } }
+          ]
+        }
+      })
+    ]);
+
+    const [
+      usersCount,
+      petsCount,
+      seedsStatsCount
+    ] = await Promise.all([
       User.count(),
       Pet.count(),
       SeedsStat.count()
     ]);
 
-    target.rating = counts.reduce((acc, v) => acc + v) - balance - (petPos || counts[1]) - (seedsPos || counts[2]);
-    target.save()
+    const getBalls = (max, curr) => max - (curr || max);
+
+    target.rating = [
+      getBalls(usersCount, balancePos), // Balance
+      getBalls(petsCount, petPos), // Pets
+      getBalls(seedsStatsCount, seedsPos), // Seeds
+      getBalls(usersCount, levelPos + 1) // Level
+    ].reduce((acc, v) => acc + v);
+
+    target.save();
 
     ctx.answer([
       `🔼 ${target}:\n`,
-      `💳 №${balance} по балансу.`,
+      `💳 №${balancePos} по балансу.`,
+      `⚡ №${levelPos + 1} по уровню.`,
       pet ? `🐾 №${petPos} по питомцу.` : '⭕ Нет в питомцах.',
       seedsStat ? `🌻 №${seedsPos} по семечкам.` : '⭕ Нет в семечках.',
       `\n⭐ Рейтинг: ${target.rating} ед.`
-    ])
+    ]);
   }
 }
 
@@ -52,15 +82,15 @@ export default class ProfileCommand {
     new TopsSubcommand()
   ];
 
-  async handler (ctx) {
-    const { briefNumber } = ctx.getPlugin('systems/moneys')
+  async handler(ctx) {
+    const { briefNumber } = ctx.getPlugin('systems/moneys');
 
-    const target = ctx.params.target || ctx.user
-    ctx.user.achievements.unlockIf('itsMe', target === ctx.user)
+    const target = ctx.params.target || ctx.user;
+    ctx.user.achievements.unlockIf('itsMe', target === ctx.user);
 
-    const { list, Achievement } = ctx.getPlugin('systems/achievements')
-    const unlockedCount = await Achievement.count({ where: { vkId: ctx.user.vkId } })
-    const job = target.jobs.get()
+    const { list, Achievement } = ctx.getPlugin('systems/achievements');
+    const unlockedCount = await Achievement.count({ where: { vkId: ctx.user.vkId } });
+    const job = target.jobs.get();
 
     ctx.builder()
       .lines([
@@ -75,8 +105,7 @@ export default class ProfileCommand {
       ])
       .keyboard(Keyboard.builder()
         .textButton({ label: 'Топ', payload: { command: `профиль топ id${target.vkId}` } })
-        .inline()
-      )
-      .answer()
+        .inline())
+      .answer();
   }
 }

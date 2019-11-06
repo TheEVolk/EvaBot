@@ -1,6 +1,6 @@
-import sendNotification from './notificationSender'
-import initDb from './dbAchievement'
-import initUserMethods from './userMethods'
+import sendNotification from './notificationSender.js'
+import initDb from './dbAchievement.js'
+import initUserMethods from './userMethods.js'
 
 export default class {
   constructor (henta) {

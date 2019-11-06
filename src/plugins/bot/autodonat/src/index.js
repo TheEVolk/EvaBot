@@ -1,4 +1,5 @@
-import nanoexpress from 'nanoexpress'
+import express from 'express'
+import bodyParser from 'body-parser'
 import Sequelize from 'sequelize'
 
 export default class AutodonatPlugin {
@@ -24,10 +25,14 @@ export default class AutodonatPlugin {
   }
 
   start (henta) {
-    const app = nanoexpress()
+    const app = express()
+
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
 
     app.post('/', (req, res) => {
-      const data = JSON.parse(req.body);
+      console.log(req.body)
+      const data = req.body;//JSON.parse(req.body);
 
       if (data.payment.comment.startsWith('ed_')) {
         henta.log(`Обработка ${data.payment.comment}`);
@@ -104,12 +109,26 @@ export default class AutodonatPlugin {
 
     if (market.type === 'case') {
       const casesPlugin = this.henta.getPlugin('bot/cases');
+      const redisPlugin = this.henta.getPlugin('common/redis');
+
       casesPlugin.Case.create({
         vkId: user.vkId,
         slug: market.slug
       });
 
       user.send(`📦 Автодонат >> ${casesPlugin.fromSlug[market.slug].title}!`);
+      
+      const bonus = await redisPlugin.get('autodonat:' + user.vkId);
+      if (bonus === market.slug) {
+        user.send('❤ Супер! Держи еще один такой кейс!');
+        casesPlugin.Case.create({
+          vkId: user.vkId,
+          slug: market.slug
+        });
+      }
+
+      user.send('🆓 Купи сейчас такой же кейс и получи еще один абсолютно бесплатно!');
+      redisPlugin.set('autodonat:' + user.vkId, market.slug);
     }
   }
 

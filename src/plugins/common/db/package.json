@@ -1,9 +1,4 @@
 {
-  "name": "henta-plugin-common-db",
-  "version": "0.2.0",
-  "description": "Database system",
   "main": "src/index.js",
-  "keywords": [],
-  "author": "TheEVolk",
-  "license": "ISC"
+  "type": "module"
 }

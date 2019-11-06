@@ -1,10 +1,10 @@
-import { Op } from 'sequelize'
+import { Op } from 'sequelize';
 
 class TopSubcommand {
   name = 'топ'
 
-  async handler (ctx) {
-    const { User } = ctx.getPlugin('common/users')
+  async handler(ctx) {
+    const { User } = ctx.getPlugin('common/users');
     const [users, myPos] = await Promise.all([
       User.findAll({ order: [['money', 'DESC']], limit: 5 }),
       User.count({ where: { money: { [Op.gte]: ctx.user.money } } })
@@ -16,9 +16,9 @@ class TopSubcommand {
         ...users.map(
           (v, i) => `${i + 1}⃣ ${v}\n— ${v.money.toLocaleString('ru')} бит.`
         ),
-        `\n🔼 Вы №${myPos} в топе!`,
+        `\n🔼 Вы №${myPos} в топе!`
       ])
-      .answer()
+      .answer();
   }
 }
 
@@ -34,12 +34,12 @@ export default class BalanceCommand {
     new TopSubcommand()
   ]
 
-  async handler (ctx) {
-    const target = ctx.params.target || ctx.user
+  async handler(ctx) {
+    const target = ctx.params.target || ctx.user;
 
     ctx.answer([
       target === ctx.user && `💲 Баланс ${target}:`,
       `💳 ${target.money.toLocaleString('ru')} бит.`
-    ])
+    ]);
   }
 }

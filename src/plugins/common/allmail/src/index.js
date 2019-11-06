@@ -1,38 +1,37 @@
-import model from './model'
+import model from './model.js';
 
 export default class AllmailPlugin {
-  constructor (henta) {
+  constructor(henta) {
     Object.assign(this, {
       henta
-    })
+    });
   }
 
-  async init (henta) {
-    const dbPlugin = henta.getPlugin('common/db')
-    const usersPlugin = henta.getPlugin('common/users')
+  async init(henta) {
+    const dbPlugin = henta.getPlugin('common/db');
 
     // Load categories
     this.categories = await henta.util.loadSettings('allmailCategories.json');
 
-    // Add user methods
-    usersPlugin.group('allmain')
-      .method('is', async (self, slug) =>
-        !!await this.AllmailSubscriber.findOne({ where: { vkId: self.vkId, slug } })
-      )
-      .method('subscribe', ({ vkId }, slug) =>
-        this.AllmailSubscriber.create({ vkId, slug })
-      )
-      .method('unsubscribe', ({ vkId }, slug) =>
-        this.AllmailSubscriber.destroy({ vkId, slug })
-      )
-      .method('getSubscribes', async (self) => {
-        const rows = await this.AllmailSubscriber.findAll({ where: { vkId: self.vkId } })
-        return rows.map(v => v.slug)
-      })
-      .end()
-
     // Create Subscriber table
-    this.AllmailSubscriber = dbPlugin.define('allmailSubscriber', model, { timestamps: false })
-    await dbPlugin.safeSync(this.AllmailSubscriber)
+    this.AllmailSubscriber = dbPlugin.define('allmailSubscriber', model, { timestamps: false });
+    await dbPlugin.safeSync(this.AllmailSubscriber);
+  }
+
+  async is(vkId, slug) {
+    return !!await this.AllmailSubscriber.findOne({ where: { vkId, slug } });
+  }
+
+  subscribe(vkId, slug) {
+    return this.AllmailSubscriber.findOrCreate({ where: { vkId, slug } });
+  }
+
+  unsubscribe(vkId, slug) {
+    return this.AllmailSubscriber.destroy({ where: { vkId, slug } });
+  }
+
+  async getSubscribes(vkId) {
+    const rows = await this.AllmailSubscriber.findAll({ where: { vkId } });
+    return rows.map(v => v.slug);
   }
 }

@@ -11,6 +11,11 @@ export default class HelloChatPlugin {
       return next()
     }
 
+    const allmailPlugin = this.henta.getPlugin('common/allmail')
+    allmailPlugin.subscribe(ctx.peerId, 'news');
+    allmailPlugin.subscribe(ctx.peerId, 'updates');
+    allmailPlugin.subscribe(ctx.peerId, 'payouts');
+
     ctx.send([
       `🦄 Я вас категорически приветствую.`,
       `\nТеперь в вашей беседе будет намного веселее, ведь здесь поселилась прекрасная Ева Цифрова.`,

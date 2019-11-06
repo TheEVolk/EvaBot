@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize'
-import initUsersMethods from './defaultMethods'
-import botHandler from './botHandler'
-import initBotcmdType from './botcmdType'
+import initUsersMethods from './defaultMethods.js'
+import botHandler from './botHandler.js'
+import initBotcmdType from './botcmdType.js'
 import EventEmitter from 'events'
 
 export default class extends EventEmitter {
@@ -27,11 +27,11 @@ export default class extends EventEmitter {
   }
 
   async start (henta) {
-    const dbPlugin = henta.getPlugin('common/db')
-    this.User = dbPlugin.defineCached('user', this.userModel, { timestamps: false })
-    await dbPlugin.safeSync(this.User.model)
+    const dbPlugin = henta.getPlugin('common/db');
+    this.User = dbPlugin.defineCached('user', this.userModel, { timestamps: false });
+    await dbPlugin.safeSync(this.User.model);
 
-    Object.assign(this.User.model.prototype, this.usersPrototype)
+    Object.assign(this.User.model.prototype, this.usersPrototype);
   }
 
   /**

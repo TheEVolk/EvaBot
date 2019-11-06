@@ -1,4 +1,4 @@
-import { createCanvas, loadImage } from 'canvas'
+const { createCanvas, loadImage } = require('canvas');
 
 export default class SharGame {
   constructor () {

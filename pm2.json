@@ -1,7 +1,8 @@
 {
-  "name": "EvaBot",
-  "script": "index.js",
-  "args": ["--color"],
+  "name": "EvaBot2",
+  "script": "./",
+  "args": ["--color", "--experimental-vm-modules"],
   "node_args": "-r esm",
-  "watch": false
+  "watch": false,
+  "interpreter": "/root/n/n/versions/node/13.0.1/bin/node"
 }

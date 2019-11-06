@@ -1,9 +1,4 @@
 {
-  "name": "henta-plugin-common-users",
-  "version": "0.2.0",
-  "description": "Bot commands system",
   "main": "src/index.js",
-  "keywords": [],
-  "author": "TheEVolk",
-  "license": "ISC"
+  "type": "module"
 }

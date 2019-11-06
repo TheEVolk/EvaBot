@@ -1,4 +1,4 @@
-import { Keyboard } from 'vk-io'
+import { Keyboard } from 'vk-io';
 
 export default class CommandNotFoundPlugin {
   init (henta) {

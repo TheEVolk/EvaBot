@@ -3,18 +3,18 @@
     "slug": "news",
     "title": "Новости",
     "emoji": "📰",
-    "bonus": "15000"
+    "bonus": "98"
   },
   {
     "slug": "updates",
     "title": "Обновления",
     "emoji": "🔼",
-    "bonus": "5000"
+    "bonus": "45"
   },
   {
     "slug": "payouts",
     "title": "Раздачи",
     "emoji": "💸",
-    "bonus": "2000"
+    "bonus": "20"
   }
 ]

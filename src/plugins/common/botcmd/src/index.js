@@ -1,5 +1,5 @@
-import ArgumentParser from './argumentParser'
-import CommandLoader from './commandLoader'
+import ArgumentParser from './argumentParser.js'
+import CommandLoader from './commandLoader.js'
 
 export default class BotCmdPlugin {
   constructor (henta) {

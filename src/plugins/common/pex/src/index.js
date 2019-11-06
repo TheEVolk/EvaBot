@@ -1,4 +1,4 @@
-import initUserMethods from './userMethods'
+import initUserMethods from './userMethods.js'
 
 export default class {
   constructor (henta) {
@@ -31,6 +31,7 @@ export default class {
       return true
     }
 
+    console.log(role.data.allow)
     if (role.data.allow && role.data.allow.includes(right)) {
       return true
     }

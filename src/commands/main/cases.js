@@ -214,7 +214,7 @@ class BonusSubcommand {
 
     redisPlugin.set(`cases:${ctx.user.vkId}`, Date.now());
 
-    const isWin = true;// Math.random() > 0.5;
+    const isWin = Math.random() > 0.5;
     if (isWin) {
       casesPlugin.Case.create({
         vkId: ctx.user.vkId,
@@ -255,7 +255,7 @@ export default class CasesCommand {
       .oneTime();
 
     cases.forEach((v, i) => {
-      if (i > 9) {
+      if (i >= 9) {
         return;
       }
 

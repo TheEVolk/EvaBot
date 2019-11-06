@@ -2,7 +2,8 @@ import Sequelize from 'sequelize'
 
 export default class SeedsGamePlugin {
   constructor (henta) {
-    this.henta = henta
+    this.henta = henta;    
+    this.cache = new Map();
 
     this.getStat = this.getStat.bind(this);
     this.getTotal = this.getTotal.bind(this);
@@ -24,9 +25,15 @@ export default class SeedsGamePlugin {
   }
 
   async getStat (vkId) {
+    const cachedUser = this.cache.get(vkId);
+    if (cachedUser) {
+      return cachedUser.count;
+    }
+    
     const row = await this.SeedsStat.findOne({ where: { vkId } });
     if (row) {
-      return row.count
+      this.cache.set(vkId, row);
+      return row.count;
     }
   }
 
@@ -35,10 +42,16 @@ export default class SeedsGamePlugin {
   }
 
   async peck (vkId) {
-    const [row] = await this.SeedsStat.findOrCreate({ where: { vkId } });
+    const cachedUser = this.cache.get(vkId);
+    const [row] = cachedUser ? [cachedUser] : await this.SeedsStat.findOrCreate({ where: { vkId } });
+
+    if (!cachedUser) {
+      this.cache.set(vkId, row);
+    }
+    
     row.count++;
     await row.save();
     
-    return row.count
+    return row.count;
   }
 }

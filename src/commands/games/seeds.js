@@ -40,17 +40,12 @@ class PeckSubcommand {
     redisPlugin.set('seeds-trash', (parseInt(await redisPlugin.get('seeds-trash')) || 0) + 1)
 
     ctx.user.lvl.addScore(1)
-    ctx.user.achievements.unlockIf('seeds', stat === 1000)
-
-    const myPos = await SeedsStat.count({ where: { count: { [Op.gte]: stat } } })
-    const next = await SeedsStat.findOne({ where: { count: { [Op.gt]: stat } }, order: [['count', 'ASC']] })
-
+    ctx.user.achievements.unlockIf('seeds', stat === 1000);
+    
     ctx.builder()
       .lines([
         `➕ Вы щелкнули семечку.`,
-        `🌻 Всего: ${stat.toLocaleString('ru')} сем.`,
-        `\n🔼 Вы №${myPos} в топе!`,
-        next && `💡 ${next.count - stat} до повышения.`
+        `🌻 Всего: ${stat.toLocaleString('ru')} сем.`
       ])
       .keyboard(Keyboard.builder()
         .textButton({ label: 'Щёлк!', color: 'positive', payload: { command: 'семечки щелкать' } })

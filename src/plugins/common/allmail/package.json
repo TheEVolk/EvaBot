@@ -1,9 +1,4 @@
 {
-  "name": "henta-plugin-common-allmail",
-  "version": "0.1.0",
-  "description": "subscribe to mail sender",
   "main": "src/index.js",
-  "keywords": [],
-  "author": "TheEVolk",
-  "license": "ISC"
+  "type": "module"
 }
