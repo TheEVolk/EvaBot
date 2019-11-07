@@ -4,7 +4,8 @@ import { Keyboard } from 'vk-io';
 class TopsSubcommand {
   name = 'топ'
   arguments = {
-    target: { name: 'игрок', type: 'user', optional: true }
+    target: { name: 'игрок', type: 'user', optional: true },
+    graph: { name: 'график', type: 'word', optional: true }
   }
 
   async handler(ctx) {
@@ -59,14 +60,36 @@ class TopsSubcommand {
 
     target.save();
 
-    ctx.answer([
-      `🔼 ${target}:\n`,
-      `💳 №${balancePos} по балансу.`,
-      `⚡ №${levelPos + 1} по уровню.`,
-      pet ? `🐾 №${petPos} по питомцу.` : '⭕ Нет в питомцах.',
-      seedsStat ? `🌻 №${seedsPos} по семечкам.` : '⭕ Нет в семечках.',
-      `\n⭐ Рейтинг: ${target.rating} ед.`
-    ]);
+    const jsonData = {
+      type: 'radar',
+      data: {
+        labels: ['Баланс', 'Питомец', 'Семечки', 'Уровень'],
+        datasets: [
+          {
+            label: target.getFullName(),
+            data: [
+              getBalls(usersCount, balancePos) / usersCount,
+              getBalls(petsCount, petPos) / petsCount,
+              getBalls(seedsStatsCount, seedsPos) / seedsStatsCount,
+              getBalls(usersCount, levelPos + 1) / usersCount
+            ],
+            backgroundColor: 'green'
+          }
+        ]
+      }
+    };
+
+    ctx.builder()
+      .photo(ctx.params.graph === 'график' && `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(jsonData))}`)
+      .lines([
+        `🔼 ${target}:\n`,
+        `💳 №${balancePos} по балансу.`,
+        `⚡ №${levelPos + 1} по уровню.`,
+        pet ? `🐾 №${petPos} по питомцу.` : '⭕ Нет в питомцах.',
+        seedsStat ? `🌻 №${seedsPos} по семечкам.` : '⭕ Нет в семечках.',
+        `\n⭐ Рейтинг: ${target.rating} ед.`
+      ])
+      .answer();
   }
 }
 
