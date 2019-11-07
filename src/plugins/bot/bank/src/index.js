@@ -14,7 +14,7 @@ export default class BankPlugin {
     const dbPlugin = this.henta.getPlugin('common/db');
     this.BankAccount = dbPlugin.define('bankAccount', {
       vkId: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
-      count: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
+      count: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 }
     }, { timestamps: false });
 
     await dbPlugin.safeSync(this.BankAccount);
@@ -37,14 +37,22 @@ export default class BankPlugin {
       isUp = false;
     }
 
-    rate += isUp ? 1 : -1;
+    rate += Math.floor(Math.random() * (isUp ? 5 : -5));
     this.henta.vk.api.messages.send({
       message: `${isUp ? '📈' : '📉'} Курс: ${rate.toLocaleString('ru')} бит.`,
-      chat_id: 2,
+      chat_id: 2
     });
 
     const redisPlugin = this.henta.getPlugin('common/redis');
     redisPlugin.set('bank-rate', rate);
+
+    const history = await redisPlugin.getObject('bank-history') || [];
+    history.push(rate);
+    if (history.length > 50) {
+      history.shift();
+    }
+
+    redisPlugin.setObject('bank-history', history);
   }
 
   async getAccount(vkId) {

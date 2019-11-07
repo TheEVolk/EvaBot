@@ -108,6 +108,38 @@ export default class BankCommand {
   ];
 
   async handler(ctx) {
+    const redisPlugin = ctx.getPlugin('common/redis');
+    const imageCachePlugin = ctx.getPlugin('common/imageCache');
+
+    const history = await redisPlugin.getObject('bank-history') || [];
+    const jsonData = {
+      type: 'line',
+      data: {
+        labels: history.map(() => ''),
+        datasets: [
+          {
+            label: 'Курс',
+            data: history,
+            borderColor: 'green',
+            fill: false
+          }
+        ]
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        scales: {
+          yAxes: [{
+            display: true,
+            ticks: {
+              beginAtZero: false
+            }
+          }]
+        }
+      }
+    };
+
     const target = ctx.params.target || ctx.user;
     const bankPlugin = ctx.getPlugin('bot/bank');
     const [account, sum, rate] = await Promise.all([
@@ -125,6 +157,9 @@ export default class BankCommand {
         !account && '\n💡 Используйте `банк купить <кол-во>` для покупки яриков.',
         account && '\n💡 Используйте `банк продать <кол-во>` для продажи яриков.'
       ])
+      .attach(imageCachePlugin.get(
+        `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(jsonData))}`
+      ))
       .answer();
   }
 }
