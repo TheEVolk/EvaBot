@@ -1,100 +1,104 @@
-import makeMsg from './dataToMsg'
+import makeMsg from './dataToMsg';
 
 export default class MessageBuilder {
-  constructor (data, defaultValues) {
-    this.msg = defaultValues || {}
+  constructor(data, defaultValues) {
+    this.msg = defaultValues || {};
     if (data) {
-      Object.assign(this.msg, makeMsg(data))
+      Object.assign(this.msg, makeMsg(data));
     }
 
-    this.msg['disable_mentions'] = this.msg['disable_mentions'] || 1
+    this.msg.disable_mentions = this.msg.disable_mentions || 1;
   }
 
-  setContext (context) {
-    this.context = context
+  setContext(context) {
+    this.context = context;
   }
 
-  async send () {
-    this.msg['peer_id'] = this.context.peerId
-    await this.run()
-    return this.context.vk.api.messages.send(this.msg)
+  async send() {
+    this.msg.peer_id = this.context.peerId;
+    await this.run();
+    return this.context.vk.api.messages.send(this.msg);
   }
 
-  async uploadAttachments () {
+  async uploadAttachments() {
     if (!this.msg.attachment) {
-      return
+      return;
     }
 
     if (typeof this.msg.attachment !== 'object' || !Array.isArray(this.msg.attachment)) {
-      this.msg.attachment = [this.msg.attachment]
+      this.msg.attachment = [this.msg.attachment];
     }
 
-    this.msg.attachment = await Promise.all(this.msg.attachment)
+    this.msg.attachment = await Promise.all(this.msg.attachment);
   }
 
-  async run () {
-    await Promise.all([this.uploadAttachments()])
+  async run() {
+    await Promise.all([this.uploadAttachments()]);
   }
 
-  line (text) {
+  line(text) {
     if (!text) {
-      return
+      return;
     }
 
-    return this.manageText((str) => str ? `${str}\n${text}` : text)
+    return this.manageText(str => (str ? `${str}\n${text}` : text));
   }
 
-  lines (lines) {
-    lines.forEach(item => this.line(item))
-    return this
+  lines(lines) {
+    lines.forEach(item => this.line(item));
+    return this;
   }
 
-  text (text) {
-    return this.manageText((str) => str ? `${str}${text}` : text)
+  text(text) {
+    return this.manageText(str => (str ? `${str}${text}` : text));
   }
 
-  manageText (func) {
-    this.msg.message = func(this.msg.message)
-    return this
+  manageText(func) {
+    this.msg.message = func(this.msg.message);
+    return this;
   }
 
-  keyboard (keyboard) {
-    this.msg.keyboard = keyboard
-    return this
+  keyboard(keyboard) {
+    this.msg.keyboard = keyboard;
+    return this;
   }
 
-  attach (attachment) {
+  attach(attachment) {
     if (!this.msg.attachment) {
-      this.msg.attachment = []
+      this.msg.attachment = [];
     }
 
     if (typeof this.msg.attachment !== 'object') {
-      this.msg.attachment = [this.msg.attachment]
+      this.msg.attachment = [this.msg.attachment];
     }
 
-    this.msg.attachment.push(attachment)
-    return this
+    this.msg.attachment.push(attachment);
+    return this;
   }
 
-  audioMessage (source) {
+  audioMessage(source) {
     return this.attach(
       this.context.vk.upload.audioMessage({
         ['peer_id']: this.context.peerId,
         source
       })
-    )
+    );
   }
 
-  photo (source) {
+  photo(source) {
+    if (!source) {
+      return this;
+    }
+
     return this.attach(
       this.context.vk.upload.messagePhoto({
         ['peer_id']: this.context.peerId,
         source
       })
-    )
+    );
   }
 
-  getKeyboard () {
-    return this.msg.keyboard
+  getKeyboard() {
+    return this.msg.keyboard;
   }
 }
