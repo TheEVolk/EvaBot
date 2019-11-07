@@ -1,8 +1,8 @@
-import Sequelize from 'sequelize'
+import Sequelize from 'sequelize';
 
 export default class SeedsGamePlugin {
-  constructor (henta) {
-    this.henta = henta;    
+  constructor(henta) {
+    this.henta = henta;
     this.cache = new Map();
 
     this.getStat = this.getStat.bind(this);
@@ -10,26 +10,24 @@ export default class SeedsGamePlugin {
     this.peck = this.peck.bind(this);
   }
 
-  async init (henta) {
-    this.initModel()
-  }
+  async init(henta) {
+    const dbPlugin = henta.getPlugin('common/db');
 
-  async initModel () {
-    const dbPlugin = this.henta.getPlugin('common/db')
-    this.SeedsStat = dbPlugin.define('seedsStat', {
+    this.SeedsStat = dbPlugin.defineCached('seedsStat', {
       vkId: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
       count: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 }
-    }, { timestamps: false })
+    }, { timestamps: false });
 
-    await dbPlugin.safeSync(this.SeedsStat)
+    dbPlugin.applySaveCenter(this.SeedsStat.model.prototype);
+    await dbPlugin.safeSync(this.SeedsStat.model);
   }
 
-  async getStat (vkId) {
+  async getStat(vkId) {
     const cachedUser = this.cache.get(vkId);
     if (cachedUser) {
       return cachedUser.count;
     }
-    
+
     const row = await this.SeedsStat.findOne({ where: { vkId } });
     if (row) {
       this.cache.set(vkId, row);
@@ -37,21 +35,23 @@ export default class SeedsGamePlugin {
     }
   }
 
-  getTotal () {
+  getTotal() {
     return this.SeedsStat.sum('count');
   }
 
-  async peck (vkId) {
+  async peck(vkId) {
     const cachedUser = this.cache.get(vkId);
-    const [row] = cachedUser ? [cachedUser] : await this.SeedsStat.findOrCreate({ where: { vkId } });
+    const [row] = cachedUser
+      ? [cachedUser]
+      : await this.SeedsStat.findOrCreate({ where: { vkId } });
 
     if (!cachedUser) {
       this.cache.set(vkId, row);
     }
-    
-    row.count++;
+
+    row.count += 1;
     await row.save();
-    
+
     return row.count;
   }
 }
