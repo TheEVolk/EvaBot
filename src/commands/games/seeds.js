@@ -85,6 +85,7 @@ class ClearSubcommand {
 export default class SeedsCommand {
   name = 'семечки'
   description = 'щелкать семки'
+  emoji = '🌻';
   subcommands = [
     new PeckSubcommand(),
     new TopSubcommand(),

@@ -1,4 +1,6 @@
 export default class {
+  private = true;
+  
   constructor () {
     Object.assign(this, {
       name: 'автосалон',

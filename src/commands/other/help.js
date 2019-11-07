@@ -7,10 +7,10 @@ export default class HelpCommand {
   printCategory (all, category) {
     const commands = all.filter(v => v.type === category.slug)
 
-    return [
+    return commands.length > 0 ? [
       category.title + ':',
       ...commands.map(v => this.printCommand(v))
-    ].join('\n')
+    ].join('\n') : ''
   }
 
   printCommand (command) {
@@ -21,7 +21,7 @@ export default class HelpCommand {
     const botcmdPlugin = ctx.getPlugin('common/botcmd')
     const commandTypes = [
       { slug: 'main', title: '💎 Основные' },
-      { slug: 'shop', title: '🛍 Магазины' },
+       { slug: 'shop', title: '🛍 Магазины' },
       { slug: 'games', title: '🎲 Миниигры' },
       { slug: 'other', title: '⬛ Разное' },
       { slug: 'tools', title: '🛠 Утилиты' }
