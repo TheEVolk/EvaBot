@@ -1,13 +1,18 @@
 export default class InformationCommand {
-  name = 'информация'
-  description = 'о проекте'
-  emoji = '📜'
+  name = 'информация';
+  description = 'о проекте';
+  emoji = '📜';
 
-  handler (ctx) {
+  async handler(ctx) {
+    const { User } = ctx.getPlugin('common/users');
+    const { briefNumber } = ctx.getPlugin('systems/moneys');
+    const { avgResponseTime } = ctx.getPlugin('common/hentadmin');
+
     ctx.answer([
-      `⚙ Работает на [hentavk|HENTA] ${ctx.henta.version}.`,
-      '❔ По вопросам: [evabottp|тех. поддержка]',
-      '👤 Создатель: [theevolk|TheEVolk]'
-    ])
+      `⚙ Движок: [hentavk|HENTA] ${ctx.henta.version}.`,
+      `👤 Игроков: ${await User.count()} ч.`,
+      `💵 Денег: ${briefNumber(await User.sum('money'))} бит.`,
+      `⏱️ Время ответа: ${Math.floor(avgResponseTime)} мс.`
+    ]);
   }
 }
