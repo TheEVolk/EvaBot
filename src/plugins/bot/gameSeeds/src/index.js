@@ -13,13 +13,13 @@ export default class SeedsGamePlugin {
   async init(henta) {
     const dbPlugin = henta.getPlugin('common/db');
 
-    this.SeedsStat = dbPlugin.defineCached('seedsStat', {
+    this.SeedsStat = dbPlugin.define('seedsStat', {
       vkId: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
       count: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 }
     }, { timestamps: false });
 
-    dbPlugin.applySaveCenter(this.SeedsStat.model.prototype);
-    await dbPlugin.safeSync(this.SeedsStat.model);
+    dbPlugin.applySaveCenter(this.SeedsStat.prototype);
+    await dbPlugin.safeSync(this.SeedsStat);
   }
 
   async getStat(vkId) {

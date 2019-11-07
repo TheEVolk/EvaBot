@@ -46,17 +46,14 @@ export default class extends Sequelize {
   }
 
   async saveAllData() {
-    if (this.markedASave.size === 0) {
+    const savesArray = Array.from(this.markedASave).filter(v => !!v.changed());
+    this.markedASave.clear();
+    if (savesArray.length === 0) {
       return;
     }
 
-    this.henta.log(`Сохранение ${this.markedASave.size} экземпляров.`);
-    const savesArray = Array.from(this.markedASave);
-    this.markedASave.clear();
-
-    await this.transaction(transaction => Promise.all(
-      savesArray.map(v => v.$save({ transaction }))
-    ));
+    this.henta.log(`Сохранение информации в БД (${savesArray.length} шт.)...`);
+    await Promise.all(savesArray.map(v => v.$save()));
   }
 
   async safeSync(model) {
