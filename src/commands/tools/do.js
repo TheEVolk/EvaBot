@@ -12,7 +12,7 @@ export default class DoCommand {
     const getPlugin = (str) => ctx.getPlugin(str)
 
     try {
-      if (!ctx.params.code.includes('\n') && !ctx.params.code.includes('=')) {
+      if (true) {
         ctx.params.code = `return ${ctx.params.code}`
         const func = eval('(async () => {' + ctx.params.code + '})')
 

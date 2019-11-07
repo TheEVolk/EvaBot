@@ -49,11 +49,11 @@
     "title": "VIP",
     "emoji": "💎",
     "data": {
-      "allow": {
-        "vip:jobs": true,
-        "vip:pets": true,
-        "command:change-nickname": true
-      },
+      "allow": [
+        "vip:jobs",
+        "vip:pets",
+        "command:change-nickname"
+      ],
       "values": {
         "casino:max-rate": 1000000000
       }

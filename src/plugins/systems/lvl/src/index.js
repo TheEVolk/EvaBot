@@ -37,8 +37,9 @@ export default class {
   }
 
   addLevel (user) {
+    user.score -= user.lvl.getMaxScore();
     user.level += 1
-    user.score = 0
+
     user.send(`💡 Вы получили ${user.level} уровень!`)
     this.henta.log(`${user.getFullName()} получил ${user.level} уровень.`)
   }

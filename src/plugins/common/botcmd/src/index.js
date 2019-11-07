@@ -38,7 +38,7 @@ export default class BotCmdPlugin {
       return true
     }
 
-    if (!ctx.user.pex || !ctx.user.pex.is(right)) {
+    if (!ctx.user.pex || !ctx.user.pex.is('command:'+right)) {
       ctx.answer(errStr || '⛔ Недостаточно прав для совершения этой операции.')
       return false
     }

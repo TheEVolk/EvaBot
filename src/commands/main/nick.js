@@ -4,7 +4,7 @@ export default class NickCommands {
   emoji = '🎩'
   right = 'change-nickname'
   arguments = {
-    nick: { name: 'ник', type: 'string', min: 2, max: 10 }
+    nick: { name: 'ник', type: 'string', min: 2, max: 15 }
   }
 
   handler (ctx) {

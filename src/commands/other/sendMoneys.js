@@ -6,6 +6,7 @@ export default class {
     target: { name: 'цель', type: 'user' },
     count: { name: 'кол-во', type: 'moneys' }
   }
+  right = 'command:sendMoneys'
 
   handler (ctx) {
     const { briefNumber } = ctx.getPlugin('systems/moneys')
