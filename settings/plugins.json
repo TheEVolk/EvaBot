@@ -11,6 +11,7 @@
     "common/imageCache",
     "common/onlineStatus",
     "common/allmail",
+    "common/hentadmin",
     "systems/moneys",
     "systems/achievements",
     "systems/lvl",
@@ -25,5 +26,6 @@
     "bot/gameSeeds",
     "bot/rating",
     "bot/bank",
+    "bot/liveWidget",
     "bot/cases"
 ]
