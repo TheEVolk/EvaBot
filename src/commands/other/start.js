@@ -3,7 +3,11 @@ import { Keyboard } from 'vk-io'
 export default class StartCommand {
   name = 'start'
   aliases = ['начать']
-  private = true
+  private = true;
+  cache = {
+    type: 'all',
+    ttl: 86400 * 1000
+  };
 
   handler (ctx) {
     ctx.builder()

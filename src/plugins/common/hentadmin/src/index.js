@@ -57,7 +57,9 @@ export default class HentadminPlugin {
       }
 
       this.computeResponseTime();
-      if (timeDiff > 3000) {
+    
+      this.henta.log(`${ctx.senderId}${ctx.isChat ? `/${ctx.chatId}` : ''}: ${ctx.text || '<текст отсутствует>'} (${timeDiff} мс.)`);
+      if (timeDiff > 1000) {
         this.henta.warning(`Время обработки сообщения слишком высоко: ${timeDiff} мс.`);
       }
     });

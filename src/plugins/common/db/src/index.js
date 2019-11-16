@@ -89,7 +89,5 @@ export default class extends Sequelize {
         this.henta.logger.log('Пропускаю...');
       }
     }
-
-    this.henta.logger.log(`Синхронизация таблицы "${tableName}" успешно завершена.`);
   }
 }

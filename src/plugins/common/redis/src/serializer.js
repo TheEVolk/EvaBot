@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 export default class RedisSerializer {
   constructor(plugin) {
     this.plugin = plugin;
@@ -18,12 +20,24 @@ export default class RedisSerializer {
 
   async run(data) {
     const fromRedis = await this.plugin.get(`serializer:${data.slug}`);
-    const loaded = fromRedis ? JSON.parse(fromRedis) : data.defaultValue;
+    try {
+      const loaded = fromRedis ? JSON.parse(fromRedis) : data.defaultValue;
 
-    const Class = data.class;
-    const value = Class ? new Class(loaded) : loaded;
+      const Class = data.class;
+      const value = Class ? new Class(loaded) : loaded;
 
-    this.saveList.add({ ...data, value });
-    return value;
+      this.saveList.add({ ...data, value });
+      return value;
+    } catch (error) {
+      const filePath = `${this.plugin.henta.botdir}/SERIALIZER_${data.slug.replace(':', '-')}_${Date.now()}.txt`;
+      fs.writeFileSync(filePath, fromRedis);
+      this.plugin.henta.warning(`Данные '${data.slug}' повреждены. Значение загружено в ${filePath}.`);
+
+      const Class = data.class;
+      const value = Class ? new Class(data.defaultValue) : data.defaultValue;
+
+      this.saveList.add({ ...data, value });
+      return value;
+    }
   }
 }

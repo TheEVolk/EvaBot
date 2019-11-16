@@ -76,6 +76,7 @@ export default class extends EventEmitter {
     const User = this.User.model; // Ну ёб*ный в рот..
     const user = new User({ vkId, firstName: vkUser.first_name, lastName: vkUser.last_name });
     this.applyMethodGroups(user);
+    this.cache.set(vkId, user);
     this.emit('create', user);
     this.henta.log(`Новый пользователь: ${user.firstName} ${user.lastName} (${user.getUrl()})`);
 

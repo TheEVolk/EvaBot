@@ -46,7 +46,8 @@ export default class LiveWidgetPlugin {
     jsonData.body = users.map(v => ([
       {
         text: v.nickName,
-        icon_id: `id${v.vkId}`
+        icon_id: `id${v.vkId}`,
+        url: `https://vk.com/id${v.vkId}`
       },
       {
         text: v.rating.toLocaleString('ru')

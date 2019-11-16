@@ -1,4 +1,5 @@
 import makeMsg from './dataToMsg';
+import { Keyboard } from 'vk-io';
 
 export default class MessageBuilder {
   constructor(data, defaultValues) {
@@ -63,6 +64,20 @@ export default class MessageBuilder {
     return this;
   }
 
+  makeButtons(ctx, buttons) {
+    const keyboard = Keyboard.builder();
+    buttons.forEach(v => keyboard.textButton({
+      label: v[0],
+      payload: { command: v[1] },
+      color: v[2] && 'primary'
+    }));
+
+    keyboard.inline(ctx.clientInfo.inline_keyboard === true);
+    keyboard.oneTime();
+
+    return this.keyboard(keyboard);
+  }
+
   attach(attachment) {
     if (!this.msg.attachment) {
       this.msg.attachment = [];
@@ -96,6 +111,16 @@ export default class MessageBuilder {
         source
       })
     );
+  }
+
+  cachedPhoto(slug, generator) {
+    if (!slug) {
+      return this;
+    }
+
+    const imageCachePlugin = this.context.henta.getPlugin('common/imageCache');
+    console.log(slug, generator)
+    return this.attach(imageCachePlugin.get(slug, generator));
   }
 
   getKeyboard() {

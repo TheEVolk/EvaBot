@@ -23,23 +23,20 @@ class TopSubcommand {
 }
 
 export default class BalanceCommand {
-  name = 'баланс'
-  description = 'количество бит'
-  emoji = '💳'
-  arguments = {
-    target: { name: 'игрок', type: 'user', optional: true }
-  }
+  name = 'баланс';
+  description = 'количество бит';
+  emoji = '💳';
+
+  cache = {
+    type: 'user',
+    ttl: 20 * 1000
+  };
 
   subcommands = [
     new TopSubcommand()
   ]
 
   async handler(ctx) {
-    const target = ctx.params.target || ctx.user;
-
-    ctx.answer([
-      target === ctx.user && `💲 Баланс ${target}:`,
-      `💳 ${target.money.toLocaleString('ru')} бит.`
-    ]);
+    ctx.answer(`💳 ${ctx.user.money.toLocaleString('ru')} бит.`);
   }
 }

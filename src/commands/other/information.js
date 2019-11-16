@@ -2,6 +2,10 @@ export default class InformationCommand {
   name = 'информация';
   description = 'о проекте';
   emoji = '📜';
+  cache = {
+    type: 'all',
+    ttl: 10 * 60 * 1000
+  };
 
   async handler(ctx) {
     const { User } = ctx.getPlugin('common/users');

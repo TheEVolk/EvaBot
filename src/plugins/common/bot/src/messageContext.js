@@ -1,58 +1,61 @@
-import createMessageBuilder from './messageBuilder/creator'
+import createMessageBuilder from './messageBuilder/creator';
 
-async function answer (response) {
+async function answer(response) {
   if (this.answered) {
-    throw Error('На это сообщение бот уже вернул ответ.')
+    throw Error('На это сообщение бот уже вернул ответ.');
   }
 
-  this.answered = true
-  const messageBuilder = createMessageBuilder(response)
+  this.answered = true;
+  const messageBuilder = createMessageBuilder(response);
   messageBuilder.setContext({
     peerId: this.peerId,
-    vk: this.henta.vk
-  })
+    vk: this.henta.vk,
+    henta: this.henta
+  });
 
-  await this.bot.messageProcessor.emit('answer', this, messageBuilder)
+  await this.bot.messageProcessor.emit('answer', this, messageBuilder);
 
-  return messageBuilder.send()
+  return messageBuilder.send();
 }
 
-function send (response) {
-  const messageBuilder = createMessageBuilder(response)
+function send(response) {
+  const messageBuilder = createMessageBuilder(response);
   messageBuilder.setContext({
     peerId: this.peerId,
-    vk: this.henta.vk
-  })
+    vk: this.henta.vk,
+    henta: this.henta
+  });
 
-  return messageBuilder.send()
+  return messageBuilder.send();
 }
 
-function builder (response) {
-  const messageBuilder = createMessageBuilder(response)
+function builder(response) {
+  const messageBuilder = createMessageBuilder(response);
   messageBuilder.setContext({
     peerId: this.peerId,
-    vk: this.henta.vk
-  })
+    vk: this.henta.vk,
+    henta: this.henta
+  });
 
   messageBuilder.answer = () => {
-    this.answer(messageBuilder)
-  }
+    this.answer(messageBuilder);
+  };
 
-  return messageBuilder
+  return messageBuilder;
 }
 
-function getPayloadValue (field) {
-  return this.messagePayload && this.messagePayload[field]
+function getPayloadValue(field) {
+  return this.messagePayload && this.messagePayload[field];
 }
 
-export default function applyContextMethods (ctx, bot) {
-  ctx.bot = bot
-  ctx.answer = answer
-  ctx.send = send
-  ctx.builder = builder
-  ctx.henta = bot.henta
-  ctx.getPlugin = bot.henta.getPlugin
-  ctx.getPayloadValue = getPayloadValue
-  ctx.vk = bot.henta.vk
-  ctx.api = bot.henta.vk.api
+export default function applyContextMethods(ctx, bot) {
+  ctx.bot = bot;
+  ctx.answer = answer;
+  ctx.send = send;
+  ctx.builder = builder;
+  ctx.henta = bot.henta;
+  ctx.getPlugin = bot.henta.getPlugin;
+  ctx.getPayloadValue = getPayloadValue;
+  ctx.vk = bot.henta.vk;
+  ctx.api = bot.henta.vk.api;
 }

@@ -1,10 +1,8 @@
 import Sequelize from 'sequelize';
-import startDataSaver from './dataSaver';
 
 export default class JobsPlugin {
   constructor(henta) {
     this.henta = henta;
-    this.lastSalaries = new Map();
   }
 
   async init() {
@@ -24,13 +22,7 @@ export default class JobsPlugin {
 
   async loadJobs() {
     this.list = await this.henta.util.loadSettings('jobs.json');
-    this.fromSlug = {};
-
-    this.list.forEach(v => { this.fromSlug[v.slug] = v; });
-  }
-
-  start() {
-    startDataSaver(this);
+    this.fromSlug = Object.fromEntries(this.list.map(v => [v.slug, v]));
   }
 
   get(slug) {

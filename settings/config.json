@@ -1,5 +1,9 @@
 {
 	"vk": {
-    "groupId": 134466548
+    "groupId": 134466548,
+    "useWebhook": true,
+    "webhookOptions": {
+      "path": "/or"
+    }
   }
 }

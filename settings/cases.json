@@ -106,7 +106,6 @@
       { "slug": "case", "caseSlug": "black" },
       { "slug": "case", "caseSlug": "flex" },
       { "slug": "case", "caseSlug": "uran" },
-      { "slug": "case", "caseSlug": "diamond" },
       { "slug": "case", "caseSlug": "uran" },
       { "slug": "case", "caseSlug": "uran" }
     ]
@@ -120,7 +119,6 @@
       { "slug": "score", "count": 10000 },
       { "slug": "score", "count": 50000 },
       { "slug": "score", "count": 1000000 },
-      { "slug": "case", "caseSlug": "diamond" },
       { "slug": "score", "count": 1200000 },
       { "slug": "score", "count": 2000000 },
       { "slug": "case", "caseSlug": "flex" },

@@ -37,7 +37,7 @@ export default class MessageProcessor extends AwaitEventEmitter {
 
     try {
       await this.middleware(ctx, () => {
-        this.bot.henta.log(`${ctx.senderId}${ctx.isChat ? `/${ctx.chatId}` : ''}: ${ctx.text || '<текст отсутствует>'}`)
+        
       });
     } catch (err) {
       this.emit('processError', ctx, err)

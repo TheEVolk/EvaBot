@@ -3,15 +3,19 @@ import fetch from 'node-fetch';
 
 const { createCanvas, loadImage, registerFont } = require('canvas');
 
-const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЭЮЯ';
+const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
 
-function shiftAlphabet(shift) {
+function shiftAlphabet(alp, shift) {
+  if (shift < 0) {
+    return shiftAlphabet(alp.reverse(), -shift).reverse();
+  }
+
   let shiftedAlphabet = ''; // новый алфавит
   // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < alphabet.length; i++) {
-    const currentLetter = (alphabet[i + shift] === undefined)
-      ? (alphabet[i + shift - alphabet.length])
-      : (alphabet[i + shift]);
+  for (let i = 0; i < alp.length; i++) {
+    const currentLetter = (alp[i + shift] === undefined)
+      ? (alp[i + shift - alp.length])
+      : (alp[i + shift]);
 
     shiftedAlphabet += currentLetter;
   }
@@ -19,7 +23,8 @@ function shiftAlphabet(shift) {
 }
 
 function encrypt(str, count) {
-  const shiftedAlphabet = shiftAlphabet(count);
+  const shiftedAlphabet = shiftAlphabet(alphabet, count);
+  console.log(shiftedAlphabet)
   return Array.from(str).reduce((acc, v) => (
     acc + shiftedAlphabet[alphabet.indexOf(v)]
   ), '');

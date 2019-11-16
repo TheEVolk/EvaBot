@@ -12,6 +12,7 @@
     "common/onlineStatus",
     "common/allmail",
     "common/hentadmin",
+    "common/activeStats",
     "systems/moneys",
     "systems/achievements",
     "systems/lvl",

@@ -2,6 +2,10 @@ export default class DonatCommand {
   name = 'донат'
   description = 'товар за деньги'
   emoji = '💲'
+  cache = {
+    type: 'all',
+    ttl: 86400 * 1000
+  };
 
   handler (ctx) {
     ctx.answer([

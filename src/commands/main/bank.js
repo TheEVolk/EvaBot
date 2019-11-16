@@ -99,7 +99,7 @@ export default class BankCommand {
   description = 'второй баланс';
   emoji = '🏦';
   arguments = {
-    target: { name: 'цель', type: 'user' }
+    target: { name: 'цель', type: 'user', optional: true }
   };
 
   subcommands = [
@@ -107,44 +107,32 @@ export default class BankCommand {
     new PullSubcommand()
   ];
 
-  async handler(ctx) {
-    const redisPlugin = ctx.getPlugin('common/redis');
-    const imageCachePlugin = ctx.getPlugin('common/imageCache');
-
-    const history = await redisPlugin.getObject('bank-history') || [];
-    const jsonData = {
+  generateChart(history) {
+    const data = {
       type: 'line',
       data: {
         labels: history.map(() => ''),
         datasets: [
-          {
-            label: 'Курс',
-            data: history,
-            borderColor: 'green',
-            fill: false
-          }
+          { label: 'Курс', data: history, borderColor: 'green', fill: false }
         ]
       },
       options: {
-        legend: {
-          display: false
-        },
-        scales: {
-          yAxes: [{
-            display: true,
-            ticks: {
-              beginAtZero: false
-            }
-          }]
-        }
+        legend: { display: false },
+        scales: { yAxes: [{ display: true, ticks: { beginAtZero: false } }] }
       }
     };
 
+    return `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(data))}`;
+  }
+
+  async handler(ctx) {
+    const redisPlugin = ctx.getPlugin('common/redis');
+
     const target = ctx.params.target || ctx.user;
     const bankPlugin = ctx.getPlugin('bot/bank');
-    const [account, sum, rate] = await Promise.all([
+    const [history, account, rate] = await Promise.all([
+      redisPlugin.getObject('bank-history'),
       bankPlugin.getAccount(target.vkId),
-      bankPlugin.BankAccount.sum('count'),
       bankPlugin.getRate()
     ]);
 
@@ -152,14 +140,11 @@ export default class BankCommand {
       .lines([
         account && target !== ctx.user && `👤 ${target}:`,
         account && `📟 ${account.count.toLocaleString('ru')} яр.`,
-        `💻 Всего: ${sum.toLocaleString('ru')} яр.`,
         `📈 Курс: ${rate.toLocaleString('ru')} бит.`,
         !account && '\n💡 Используйте `банк купить <кол-во>` для покупки яриков.',
         account && '\n💡 Используйте `банк продать <кол-во>` для продажи яриков.'
       ])
-      .attach(imageCachePlugin.get(
-        `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(jsonData))}`
-      ))
+      .cachedPhoto(history.join(','), () => this.generateChart(history))
       .answer();
   }
 }

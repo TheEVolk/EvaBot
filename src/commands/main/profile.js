@@ -6,7 +6,7 @@ class TopsSubcommand {
   arguments = {
     target: { name: 'игрок', type: 'user', optional: true },
     graph: { name: 'график', type: 'word', optional: true }
-  }
+  };
 
   async handler(ctx) {
     const { User } = ctx.getPlugin('common/users');
@@ -66,21 +66,25 @@ class TopsSubcommand {
         labels: ['Баланс', 'Питомец', 'Семечки', 'Уровень'],
         datasets: [
           {
-            label: target.getFullName(),
             data: [
-              getBalls(usersCount, balancePos) / usersCount,
-              getBalls(petsCount, petPos) / petsCount,
-              getBalls(seedsStatsCount, seedsPos) / seedsStatsCount,
-              getBalls(usersCount, levelPos + 1) / usersCount
+              Math.floor(getBalls(usersCount, balancePos) / usersCount * 100),
+              Math.floor(getBalls(petsCount, petPos) / petsCount * 100),
+              Math.floor(getBalls(seedsStatsCount, seedsPos) / seedsStatsCount * 100),
+              Math.floor(getBalls(usersCount, levelPos + 1) / usersCount * 100)
             ],
             backgroundColor: 'green'
           }
         ]
+      },
+      options: {
+        legend: {
+          display: false
+        }
       }
     };
 
     ctx.builder()
-      .photo(ctx.params.graph === 'график' && `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(jsonData))}`)
+      .cachedPhoto(ctx.params.graph === 'график' && `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(jsonData))}`)
       .lines([
         `🔼 ${target}:\n`,
         `💳 №${balancePos} по балансу.`,
@@ -110,9 +114,6 @@ export default class ProfileCommand {
 
     const target = ctx.params.target || ctx.user;
     ctx.user.achievements.unlockIf('itsMe', target === ctx.user);
-
-    const { list, Achievement } = ctx.getPlugin('systems/achievements');
-    const unlockedCount = await Achievement.count({ where: { vkId: ctx.user.vkId } });
     const job = target.jobs.get();
 
     ctx.builder()
@@ -121,7 +122,6 @@ export default class ProfileCommand {
         target.role !== 'user' && `🔑 ${target.pex.get().title}.`,
         `💳 ${target.moneys.getLocaled()} бит.`,
         job && `💼 ${job.name} [${briefNumber(job.salary)}].`,
-        `🏅 Ачивок: ${unlockedCount}/${list.length} шт.`,
         `⚡ LVL: ${target.level} (${target.lvl.getProgress()}%).`,
         target.rating && `⭐ Рейтинг: ${target.rating} ед.`,
         !target.rating && target === ctx.user && '\nВведите `профиль топ`, чтобы пересчитать рейтинг.'

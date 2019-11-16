@@ -33,6 +33,7 @@
     "slug": "moderator",
     "title": "Модератор",
     "emoji": "🦸‍",
+		"includes": [ "vip" ],
     "data": {
       "allow": [
         "command:kick-user",

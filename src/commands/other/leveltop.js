@@ -4,6 +4,10 @@ export default class LevelTopCommand {
   name = 'левелтоп';
   description = 'топ по уровню';
   emoji = '⚡';
+  cache = {
+    type: 'user',
+    ttl: 10 * 60 * 1000
+  };
 
   async handler(ctx) {
     const { User } = ctx.getPlugin('common/users');

@@ -115,8 +115,8 @@ export default class {
       await messageBuilder.run()
 
       for (const peerId of req.payload.peers) {
-        messageBuilder.context.peerId = peerId
-        messageBuilder.send()
+        messageBuilder.msg.peer_id = peerId
+        messageBuilder.context.vk.api.messages.send(messageBuilder.msg);
       }
     }
 
@@ -159,7 +159,7 @@ export default class {
 
   set (tag, handler) {
     if (this.tags[tag]) {
-      throw Error(`Тег ${tag} уже существует`)
+      this.henta.warning(`Тег ${tag} уже существует`)
     }
 
     this.tags[tag] = handler

@@ -21,7 +21,7 @@ export default class SlotsCommand {
       'melon', 'dollar', 'seven'
     ];
 
-    ctx.send('🎰 Крутим барабаны!');
+    ctx.answer('🎰 Крутим барабаны!');
     await this.sleep(1000);
 
     const result = [
@@ -49,7 +49,7 @@ export default class SlotsCommand {
 
     ctx.builder()
       .attach(this.getImage(ctx, result, coff))
-      .answer();
+      .send();
   }
 
   getCoff(result) {
