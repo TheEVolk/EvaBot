@@ -1,3 +1,5 @@
+import util from 'util';
+
 export default class DoCommand {
   name = '$'
   description = 'выполнить код'
@@ -12,18 +14,13 @@ export default class DoCommand {
     const getPlugin = (str) => ctx.getPlugin(str)
 
     try {
-      if (true) {
-        ctx.params.code = `return ${ctx.params.code}`
-        const func = eval('(async () => {' + ctx.params.code + '})')
-
-        const startTime = Date.now()
-        const result = await func()
-        const diffTime = Date.now() - startTime
-        ctx.answer([
-          `⏱ Код выполнен за ${diffTime} мс.`,
-          `${String(result)}`
-        ])
-      }
+      const startTime = Date.now()
+      const result = await eval(ctx.params.code)
+      const diffTime = Date.now() - startTime
+      ctx.answer([
+        `⏱ Код выполнен за ${diffTime} мс.`,
+        `${util.inspect(result)}`
+      ])
     } catch (e) {
       if (!e.stack) throw e
       ctx.answer(e.stack)
