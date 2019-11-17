@@ -115,12 +115,14 @@ export default class ProfileCommand {
     const target = ctx.params.target || ctx.user;
     ctx.user.achievements.unlockIf('itsMe', target === ctx.user);
     const job = target.jobs.get();
+    const partner = await target.marriage.get();
 
     ctx.builder()
       .lines([
         `👀 ${target}:`,
         target.role !== 'user' && `🔑 ${target.pex.get().title}.`,
         `💳 ${target.moneys.getLocaled()} бит.`,
+        partner && `💍 ${partner}.`,
         job && `💼 ${job.name} [${briefNumber(job.salary)}].`,
         `⚡ LVL: ${target.level} (${target.lvl.getProgress()}%).`,
         target.rating && `⭐ Рейтинг: ${target.rating} ед.`,
