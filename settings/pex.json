@@ -14,7 +14,8 @@
     "includes": [ "administrator" ],
     "data": {
       "allow": [
-        "command:set-role"
+        "command:set-role",
+        "get-errors"
       ]
     }
   },
