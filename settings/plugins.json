@@ -28,5 +28,6 @@
     "bot/rating",
     "bot/bank",
     "bot/liveWidget",
-    "bot/cases"
+    "bot/cases",
+    "bot/marriage"
 ]
