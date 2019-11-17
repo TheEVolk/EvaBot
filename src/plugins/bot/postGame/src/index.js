@@ -151,6 +151,7 @@ export default class PostGamePlugin {
       bonusData: JSON.stringify(bonusData)
     });
 
+    return currentGame;
     // Debug
   /* const usersPlugin = this.henta.getPlugin('common/users')
     const user = await usersPlugin.get(169494689)
