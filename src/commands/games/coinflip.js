@@ -44,7 +44,7 @@ export default class {
   description = 'коинфлип'
   emoji = '🌗'
   arguments = {
-    target: { name: 'профиль', type: 'user', notSelf: false },
+    target: { name: 'профиль', type: 'user', notSelf: true },
     rate: { name: 'ставка', type: 'moneys' }
   }
 
