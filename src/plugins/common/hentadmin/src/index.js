@@ -1,7 +1,7 @@
 export default class HentadminPlugin {
   constructor(henta) {
     this.henta = henta;
-    this.messages = new Set();
+    this.messages = [];
     this.avgResponseTime = 0;
     this.messagesInProcess = new WeakMap();
   }
@@ -15,8 +15,7 @@ export default class HentadminPlugin {
   async start(henta) {
     const redisPlugin = henta.getPlugin('common/redis');
     this.messages = await redisPlugin.serializer.run({
-      slug: 'hentadmin:message-times',
-      class: Set
+      slug: 'hentadmin:message-times'
     });
 
     this.computeResponseTime();
@@ -51,15 +50,15 @@ export default class HentadminPlugin {
     const timeDiff = Date.now() - startTime;
 
     setImmediate(() => {
-      this.messages.add(timeDiff);
-      if (this.messages.size > 1000) {
-        this.messages.delete(0);
+      this.messages.push(timeDiff);
+      while (this.messages.length > 200) {
+        this.messages.shift();
       }
 
       this.computeResponseTime();
     
       this.henta.log(`${ctx.senderId}${ctx.isChat ? `/${ctx.chatId}` : ''}: ${ctx.text || '<текст отсутствует>'} (${timeDiff} мс.)`);
-      if (timeDiff > 1000) {
+      if (timeDiff > 500) {
         this.henta.warning(`Время обработки сообщения слишком высоко: ${timeDiff} мс.`);
       }
     });
