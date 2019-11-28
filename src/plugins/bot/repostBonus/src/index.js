@@ -15,6 +15,51 @@ export default class PostGamePlugin {
     }, { timestamps: false });
 
     await this.RepostProcess.sync();
+
+    setInterval(async () => {
+      const ends = await this.RepostProcess.findAll({
+        where: {
+          endTime: { [Sequelize.Op.lte]: Math.floor(Date.now() / 1000) }
+        }
+      });
+
+      ends.forEach(async v => {
+        await this.processReposts(v);
+        v.destroy();
+      });
+    }, 60000);
+  }
+
+  async processReposts(process) {
+    const serviceVk = new Vk({
+      token: this.henta.config.private.pageToken
+    });
+
+    const { profiles } = await serviceVk.api.wall.getReposts({
+      owner_id: -134466548,
+      post_id: process.wallId
+    });
+
+    const usersPlugin = this.henta.getPlugin('common/users');
+    const { diffLine } = this.henta.getPlugin('systems/moneys');
+    profiles.forEach(async ({ id }) => {
+      const user = await usersPlugin.get(id);
+      if (!user) {
+        this.henta.warning(`${user.getFullName()} не игрок.`);
+        return;
+      }
+
+      user.money += 1000000;
+      user.lvl.addScore(50);
+      user.save();
+
+      user.send([
+        '✔ Раздача окончена, ты получил биты!',
+        diffLine(user, 1000000)
+      ]);
+
+      this.henta.log(`${user.getFullName()} получил бонус с раздачи.`);
+    });
   }
 
   async createPost() {
@@ -41,7 +86,7 @@ export default class PostGamePlugin {
 
     this.RepostProcess.create({
       wallId: post_id,
-      endTime: Date.now() + 86400e3
+      endTime: Math.floor(Date.now() / 1000) + 86400
     });
 
     // eslint-disable-next-line camelcase

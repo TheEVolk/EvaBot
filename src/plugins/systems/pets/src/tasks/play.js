@@ -23,7 +23,7 @@ export default class PlayTask {
 
     petOwner.send([
       '⚾ Вы поиграли с питомцем.',
-      `➕ ${pet.force} ед. силы питомцу.`
+      `➕ ${force} ед. силы питомцу.`
     ]);
 
     this.plugin.tasks.delete(this.petId);

@@ -37,7 +37,7 @@ export default class BotCmdPlugin {
     }
 
     if (!ctx.user.pex || !ctx.user.pex.is(`command:${right}`)) {
-      ctx.answer(errStr || '⛔ Недостаточно прав для совершения этой операции.');
+      ctx.answer(errStr || 'У вас недостаточно прав!');
       return false;
     }
 
@@ -121,7 +121,8 @@ export default class BotCmdPlugin {
       const [error, res] = await this.argumentParser.parse(
         ctx,
         currentCommand.arguments,
-        command === currentCommand ? 0 : 1
+        command === currentCommand ? 0 : 1,
+        commandName
       );
 
       if (error) {

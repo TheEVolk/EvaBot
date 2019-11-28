@@ -17,6 +17,9 @@ export default class PetsPlugin {
     this.kindsFromSlug = Object.fromEntries(this.kinds.map(v => [v.slug, v]));
     this.getKind = slug => this.kindsFromSlug[slug];
 
+    this.skill = await henta.util.loadSettings('pets/skill.json');
+    this.skillFromSlug = Object.fromEntries(this.skill.map(v => [v.slug, v]));
+
     this.initUser(henta);
     this.initPetModel(henta);
   }
@@ -36,9 +39,40 @@ export default class PetsPlugin {
       ownerVkId: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
       variety: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
       force: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
+      energy: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 100 },
+      skill: { type: Sequelize.TEXT, allowNull: false, defaultValue: '' },
       rating: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 }
     }, { timestamps: false });
     await dbPlugin.safeSync(this.Pet);
+    this.applyMethods();
+  }
+
+  addMethod(name, fn) {
+    // eslint-disable-next-line func-names
+    this.Pet.prototype[name] = function (...args) {
+      return fn(this, ...args);
+    };
+  }
+
+  applyMethods() {
+    this.addMethod('getKind', pet => this.kindsFromSlug[pet.type]);
+    this.addMethod('getSkill', pet => {
+      const str = pet.skill.split('|');
+      return {
+        attack: this.skillFromSlug[str[0]],
+        defend: this.skillFromSlug[str[1]]
+      };
+    });
+
+    this.addMethod('getAvailableSkill', pet => {
+      const kind = pet.getKind();
+      return kind.skill.map(v => this.skillFromSlug[v]);
+    });
+
+    this.addMethod('setSkill', (pet, skill) => {
+      const oldSkill = pet.skill.split('|');
+      pet.skill = `${skill.attack || oldSkill[0] || ''}|${skill.defend || oldSkill[1] || ''}`;
+    });
   }
 
   async start(henta) {
@@ -50,6 +84,10 @@ export default class PetsPlugin {
 
     Array.from(this.tasks).forEach(([key, value]) => {
       const Task = this.taskTypes[value.type];
+      if (!Task) {
+        return;
+      }
+
       // eslint-disable-next-line no-param-reassign
       value.data = new Task(this, key, value.data);
     });

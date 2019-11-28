@@ -29,11 +29,11 @@ export default class extends EventEmitter {
 
   async start(henta) {
     const dbPlugin = henta.getPlugin('common/db');
-    this.User = dbPlugin.defineCached('user', this.userModel, { timestamps: false });
-    dbPlugin.applySaveCenter(this.User.model.prototype);
-    await dbPlugin.safeSync(this.User.model);
+    this.User = dbPlugin.define('user', this.userModel, { timestamps: false });
+    dbPlugin.applySaveCenter(this.User.prototype);
+    await dbPlugin.safeSync(this.User);
 
-    Object.assign(this.User.model.prototype, this.usersPrototype);
+    Object.assign(this.User.prototype, this.usersPrototype);
   }
 
   /**
@@ -73,8 +73,7 @@ export default class extends EventEmitter {
   */
   async create(vkId) {
     const vkUser = (await this.henta.vk.api.users.get({ user_ids: vkId }))[0];
-    const User = this.User.model; // Ну ёб*ный в рот..
-    const user = new User({ vkId, firstName: vkUser.first_name, lastName: vkUser.last_name });
+    const user = new this.User({ vkId, firstName: vkUser.first_name, lastName: vkUser.last_name });
     this.applyMethodGroups(user);
     this.cache.set(vkId, user);
     this.emit('create', user);

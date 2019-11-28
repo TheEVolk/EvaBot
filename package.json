@@ -1,6 +1,6 @@
 {
 	"name": "henta-evabot",
-	"version": "10.3.1-beta",
+	"version": "10.4.2-beta",
 	"description": "",
 	"main": "index.js",
 	"type": "module",
@@ -12,6 +12,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@vkontakte/vk-qr": "^2.0.9",
 		"async-redis": "^1.1.7",
 		"await-event-emitter": "^1.2.0",
 		"body-parser": "^1.19.0",
@@ -33,6 +34,7 @@
 		"sequelize": "^5.21.2",
 		"sequelize-redis": "^1.0.12",
 		"simple-git": "^1.126.0",
+		"svg2img": "^0.6.1",
 		"vk-io": "^4.0.0-rc.26"
 	},
 	"devDependencies": {

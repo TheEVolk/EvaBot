@@ -10,7 +10,8 @@ export default function initUserMethods (plugin) {
     const messageBuilder = createMessageBuilder(data)
     messageBuilder.setContext({
       peerId: self.vkId,
-      vk: plugin.henta.vk
+      vk: plugin.henta.vk,
+      henta: plugin.henta
     })
 
     messageBuilder.answer = () => {

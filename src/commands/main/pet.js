@@ -46,6 +46,9 @@ class PlaySubcommand {
   async handler(ctx) {
     const petsPlugin = ctx.getPlugin('systems/pets');
     const pet = await ctx.user.pets.get();
+    if (!pet) {
+      return ctx.answer('У вас нет питомца.');
+    }
 
     const busy = petsPlugin.getBusy(pet.id);
     if (busy) {
@@ -128,6 +131,11 @@ class DuelSubcommand {
       return ctx.answer('⛔ Ваши питомцы должны быть свободны от дел.');
     }
 
+    const getSkill = pos => {
+      const res = petsPlugin.skillFromSlug[myPet.skill.split('|')[pos]];
+      return res ? res.name : 'нет.';
+    };
+
     myPet.kind = petsPlugin.getKind(myPet.type);
     const { tip } = ctx.params.target.req.new({
       tag: 'pet-duel',
@@ -135,7 +143,9 @@ class DuelSubcommand {
         `${ctx.user} приглашает вашего питомца на дуэль.`,
         `${myPet.kind.emoji} ${myPet.name}`,
         `✨ Рейтинг: ${myPet.rating} ед.`,
-        `⚡ Сила: ${myPet.force} ед.`
+        `⚡ Сила: ${myPet.force} ед.`,
+        `💥 Атака: ${getSkill(0)}`,
+        `🛡 Защита: ${getSkill(1)}`
       ].join('\n'),
       peer: ctx.peerId
     }, ctx.user);
@@ -167,7 +177,7 @@ export default class PetCommand {
   }
 
   async handler(ctx) {
-    const { getKind } = ctx.getPlugin('systems/pets');
+    const petsPlugin = ctx.getPlugin('systems/pets');
 
     const pet = await ctx.user.pets.get();
     if (!pet) {
@@ -178,69 +188,26 @@ export default class PetCommand {
         .answer();
     }
 
-    pet.kind = getKind(pet.type);
+    pet.kind = petsPlugin.getKind(pet.type);
+
+    const getSkill = pos => {
+      const res = petsPlugin.skillFromSlug[pet.skill.split('|')[pos]];
+      return res ? res.name : 'нет.';
+    };
 
     ctx.builder()
       .lines([
         `${pet.kind.emoji} ${pet.name}`,
         `✨ Рейтинг: ${pet.rating} ед.`,
-        `⚡ Сила: ${pet.force} ед.`
+        `⚡ Сила: ${pet.force} ед.`,
+        `💥 Атака: ${getSkill(0)}`,
+        `🛡 Защита: ${getSkill(1)}`
       ])
-      .keyboard(Keyboard.builder()
-        .textButton({ label: 'Прочее', payload: { command: 'пит прочее' } })
-        .inline())
+      .buttons(ctx, [
+        { label: 'Играть', payload: { command: 'пит играть' } },
+        { label: 'Умения', payload: { command: 'питскилл' } },
+        { label: 'Прочее', payload: { command: 'пит прочее' } }
+      ], 2)
       .answer();
   }
 }
-
-/*
-
-  async playHandler (ctx) {
-    const { play } = ctx.getPlugin('systems/pets')
-    const pet = await ctx.user.assertPet(ctx, 'has')
-
-    const gameSession = play.get(pet)
-    if (gameSession) {
-      return ctx.builder()
-        .text(`⏳ До конца игры ${formatDistanceToNow(gameSession.startAt + 300000, { locale: ru })}.`)
-        .botcmdButton('Назад', 'пит', 'secondary')
-        .answer()
-    }
-
-    play.run(pet)
-
-    ctx.builder()
-      .lines([
-        `🏈 Вы начали играть с ${pet.name}.`,
-        '⏳ Это займёт 5 минут реального времени.'
-      ])
-      .botcmdButton('Назад', 'пит', 'secondary')
-      .answer()
-  }
-
-  async duelHandler (ctx) {
-    const { play, duel, messages } = ctx.getPlugin('systems/pets')
-    const pet = await ctx.user.assertPet(ctx, 'has')
-    const petType = pet.getType()
-
-    ctx.assert(!play.get(pet), messages.busyErrorGame)
-    ctx.assert(!duel.get(pet), messages.busyErrorDuel)
-
-    const { tip } = ctx.params.enemy.createRequest({
-      tag: 'pets:duel',
-      text: [
-        `${ctx.user.r()} вызывает вашего питомца на дуэль.`,
-        '',
-        `${petType.emoji} ${petType.name} «${pet.name}»:`,
-        `⠀⠀✨ Рейтинг: ${pet.rating} ед;`,
-        `⠀⠀⚡ Сила: ${pet.force} ед;`
-      ].join('\n'),
-      peer: ctx.msg.peer_id
-    }, ctx.user)
-
-    ctx.builder()
-      .lines([`💥 Вы отправили ${ctx.params.enemy.r()} заявку на дуэль.`, tip])
-      .botcmdButton('Назад', 'пит', 'secondary')
-      .answer()
-  }
-*/

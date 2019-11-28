@@ -1,36 +1,17 @@
 import { Keyboard } from 'vk-io';
 import moment from 'moment';
 
-function makeButtons(ctx, buttons) {
-  const keyboard = Keyboard.builder();
-  buttons.forEach(v => keyboard.textButton({
-    label: v[0],
-    payload: { command: v[1] },
-    color: v[2] && 'primary'
-  }));
-
-  keyboard.inline(ctx.clientInfo.inline_keyboard === true);
-  keyboard.oneTime();
-
-  return keyboard;
-}
-
 class FindSubcommand {
   name = 'искать'
 
   handler(ctx) {
     if (ctx.user.job) {
-      return ctx.builder()
-        .line('🧧 У вас уже есть работа.')
-        .keyboard(Keyboard.builder()
-          .textButton({ label: 'Назад', color: 'primary', payload: { command: 'работа' } })
-          .textButton({ label: 'Уволиться', color: 'negative', payload: { command: 'работа уволиться' } }))
-        .answer();
+      return ctx.oops('У вас уже есть работа.', 'Назад', 'работа');
     }
 
     const jobsPlugin = ctx.getPlugin('systems/jobs');
     const redisPlugin = ctx.getPlugin('common/redis');
-    const job = jobsPlugin.list[Math.floor(Math.random() * jobsPlugin.list.length)];
+    const job = ctx.henta.util.pickRandom(jobsPlugin);
 
     redisPlugin.set(`jobs:select:${ctx.user.vkId}`, job.slug);
 
@@ -40,12 +21,11 @@ class FindSubcommand {
         `💲 Зарплата: ${job.salary.toLocaleString()} бит.`,
         `💵 Цена: ${job.price.toLocaleString()} бит.`
       ])
-      .keyboard(Keyboard.builder()
-        .textButton({ label: 'Устроиться', color: 'primary', payload: { command: 'работа устроиться' } })
-        .textButton({ label: 'Следующая', payload: { command: 'работа искать' } })
-        .row()
-        .textButton({ label: 'Назад', payload: { command: 'работа' } })
-        .oneTime())
+      .buttons(ctx, [
+        { label: 'Устроиться', color: 'primary', payload: { command: 'работа устроиться' } },
+        { label: 'Следующая', payload: { command: 'работа искать' } },
+        { label: 'Назад', payload: { command: 'работа' } }
+      ])
       .answer();
   }
 }

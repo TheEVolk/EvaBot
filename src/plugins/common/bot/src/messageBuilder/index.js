@@ -1,5 +1,5 @@
-import makeMsg from './dataToMsg';
 import { Keyboard } from 'vk-io';
+import makeMsg from './dataToMsg';
 
 export default class MessageBuilder {
   constructor(data, defaultValues) {
@@ -78,6 +78,21 @@ export default class MessageBuilder {
     return this.keyboard(keyboard);
   }
 
+  buttons(ctx, buttons, chunk = 3) {
+    const keyboard = Keyboard.builder();
+    buttons.forEach((v, i) => {
+      keyboard.textButton(v);
+      if ((i + 1) % chunk === 0) {
+        keyboard.row();
+      }
+    });
+
+    keyboard.inline(ctx.clientInfo.inline_keyboard === true);
+    keyboard.oneTime();
+
+    return this.keyboard(keyboard);
+  }
+
   attach(attachment) {
     if (!this.msg.attachment) {
       this.msg.attachment = [];
@@ -119,7 +134,6 @@ export default class MessageBuilder {
     }
 
     const imageCachePlugin = this.context.henta.getPlugin('common/imageCache');
-    console.log(slug, generator)
     return this.attach(imageCachePlugin.get(slug, generator));
   }
 

@@ -26,15 +26,9 @@ export default class BalanceCommand {
   name = 'баланс';
   description = 'количество бит';
   emoji = '💳';
-
-  cache = {
-    type: 'user',
-    ttl: 20 * 1000
-  };
-
   subcommands = [
     new TopSubcommand()
-  ]
+  ];
 
   async handler(ctx) {
     ctx.answer(`💳 ${ctx.user.money.toLocaleString('ru')} бит.`);

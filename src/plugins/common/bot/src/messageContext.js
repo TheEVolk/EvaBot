@@ -44,12 +44,25 @@ function builder(response) {
   return messageBuilder;
 }
 
+function oops(text, buttonLabel, buttonCommand) {
+  return this.builder()
+    .text(`😳 ${text}`)
+    .buttons(this, [{
+      label: buttonLabel,
+      payload: {
+        command: buttonCommand
+      }
+    }])
+    .answer();
+}
+
 function getPayloadValue(field) {
   return this.messagePayload && this.messagePayload[field];
 }
 
 export default function applyContextMethods(ctx, bot) {
   ctx.bot = bot;
+  ctx.oops = oops;
   ctx.answer = answer;
   ctx.send = send;
   ctx.builder = builder;

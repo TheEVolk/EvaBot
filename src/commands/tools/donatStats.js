@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 
 class ForTimeSubcommand {
   name = 'время';
+  right = 'dstats';
   arguments = {
     date: { name: 'период', type: 'word' },
     flags: { name: 'флаги', type: 'word', optional: true }
@@ -79,6 +80,7 @@ class ForTimeSubcommand {
 
 export default class DonatStatsCommand {
   name = 'дстат';
+  right = 'dstats';
   subcommands = [
     new ForTimeSubcommand()
   ];

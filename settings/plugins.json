@@ -18,6 +18,7 @@
     "systems/lvl",
     "systems/jobs",
     "systems/pets",
+    "systems/clans",
     "bot/commandNotFound",
     "bot/postGame",
     "bot/newPostToChat",
@@ -29,5 +30,6 @@
     "bot/bank",
     "bot/liveWidget",
     "bot/cases",
+    "bot/referals",
     "bot/marriage"
 ]

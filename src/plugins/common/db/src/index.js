@@ -1,7 +1,4 @@
-/* eslint-disable no-param-reassign */
 import Sequelize from 'sequelize';
-import asyncRedis from 'async-redis';
-import SequelizeRedis from 'sequelize-redis';
 
 export default class extends Sequelize {
   constructor(henta) {
@@ -22,8 +19,6 @@ export default class extends Sequelize {
   async preInit(henta) {
     try {
       await super.authenticate();
-      this.redisClient = asyncRedis.createClient();
-      this.sequelizeRedis = new SequelizeRedis(this.redisClient);
       henta.log('База данных успешно подключена.');
 
       setInterval(() => this.saveAllData(), 60000);
@@ -57,7 +52,7 @@ export default class extends Sequelize {
   }
 
   async safeSync(model) {
-    // return
+    // TODO: REWRITE
 
     await model.sync();
     const { options } = model;

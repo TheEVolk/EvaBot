@@ -25,8 +25,8 @@ export default class BankPlugin {
     return +(await redisPlugin.get('bank-rate'));
   }
 
-  async changeRate() {
-    let isUp = Math.random() > 0.5;
+  async changeRate(rand = 0.5) {
+    let isUp = Math.random() < rand;
     let rate = await this.getRate();
 
     if (rate <= 500) {

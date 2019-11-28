@@ -44,11 +44,8 @@ export default class {
     this.henta.log(`${user.getFullName()} получил ${user.level} уровень.`)
   }
 
-  getMaxScore (level) {
-    if (level <= 1) {
-      return 100
-    }
-
-    return Math.floor(this.getMaxScore(level - 1) * 1.5)
+  // Sivkoff mod
+  getMaxScore(level) {
+    return Math.floor(100 * 1.5 ** (level - 1));
   }
 }

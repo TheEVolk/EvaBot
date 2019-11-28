@@ -54,7 +54,8 @@
       "allow": [
         "vip:jobs",
         "vip:pets",
-        "command:change-nickname"
+        "command:change-nickname",
+        "command:change-pet-name"
       ],
       "values": {
         "casino:max-rate": 1000000000

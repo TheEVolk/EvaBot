@@ -1,5 +1,6 @@
 export default class HaResponseTimeCommand {
   name = 'haresp';
+  right = 'haresp';
 
   handler(ctx) {
     const hentadminPlugin = ctx.getPlugin('common/hentadmin');

@@ -2,6 +2,7 @@ import { Keyboard } from 'vk-io';
 
 export default class CreatErCommand {
   name = 'creater';
+  right = 'creater';
 
   async handler(ctx) {
     const repostBonusPlugin = ctx.getPlugin('bot/repostBonus');

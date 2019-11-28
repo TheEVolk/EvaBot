@@ -41,7 +41,9 @@ export default class SeedsGamePlugin {
 
   async peck(vkId) {
     const cachedUser = this.cache.get(vkId);
-    const row = cachedUser || (await this.SeedsStat.findOrCreate({ where: { vkId } }))[0];
+    const row = cachedUser
+      || await this.SeedsStat.findOne({ where: { vkId } })
+      || new this.SeedsStat({ vkId });
 
     if (!cachedUser) {
       this.cache.set(vkId, row);

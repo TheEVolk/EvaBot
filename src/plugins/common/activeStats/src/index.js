@@ -51,6 +51,7 @@ export default class ActiveStatsPlugin {
   }
 
   async echoDayStats() {
+    const bankPlugin = this.henta.getPlugin('bot/bank');
     const botPlugin = this.henta.getPlugin('common/bot');
 
     const dateStr = this.getDateStr();
@@ -77,6 +78,8 @@ export default class ActiveStatsPlugin {
       )
     ) / 2;
 
+    bankPlugin.changeRate(total + 100 / 200);
+
     const quality = {
       type: 'radialGauge',
       data: {
@@ -85,18 +88,6 @@ export default class ActiveStatsPlugin {
         ]
       }
     };
-
-    const posts = await this.henta.vk.api.wall.get({
-      owner_id: -67782575,
-      count: 1000,
-      access_token: this.henta.config.private.pageToken
-    });
-
-    const cits = posts.items
-      .filter(v => v.attachments.length === 2)
-      .map(v => v.text);
-
-    const citation = cits[Math.floor(Math.random() * cits.length)];
 
     const messageBuilder = botPlugin.createBuilder();
     messageBuilder.setContext({
@@ -109,8 +100,7 @@ export default class ActiveStatsPlugin {
       .lines([
         '📊 Результаты этого дня:',
         `💌 Сообщения: ${messagesChanges}`,
-        `👥 Новых игроков: ${usersChanges}`,
-        `\n${citation}`
+        `👥 Новых игроков: ${usersChanges}`
       ])
       .photo(`https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(quality))}`)
       .send();

@@ -16,6 +16,7 @@
         "sourceType": "module"
     },
     "rules": {
+        "no-param-reassign": 0,
         "no-plusplus": 0,
         "import/no-extraneous-dependencies": 0,
         "comma-dangle": ["error", "never"],

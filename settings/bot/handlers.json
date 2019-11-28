@@ -6,5 +6,6 @@
   "autodonat",
   "requests",
   "command",
-  "commandNotFound"
+  "commandNotFound",
+  "referals"
 ]
