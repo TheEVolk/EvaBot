@@ -1,14 +1,14 @@
 {
 	"vk": {
-    "token": "a1d7e845399fcc2a9e296fbb7e86fa5c9f43f247fbc8a402793c2bb354c74fa7407906b0fb556b1206476"
+    "token": "_"
   },
-  "pageToken": "267159e409bceb32fc4c587f5b31448f6f66a297439c99f717372e19e0ec010dd7b8439dbe66240692869",
-  "cmToken": "3a5edda26a03238e64fab34e78738d9f",
-  "qiwiToken": "f6f78acf21dcbc91bdada5bf1151c80b",
+  "pageToken": "_",
+  "cmToken": "_",
+  "qiwiToken": "_",
   "database": {
-    "name": "db_eva",
-    "user": "eva",
-    "pass": "Z555z66^",
+    "name": "_",
+    "user": "_",
+    "pass": "_",
     "options": {
       "host": "localhost",
       "dialect": "postgres",
